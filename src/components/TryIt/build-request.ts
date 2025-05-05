@@ -29,7 +29,6 @@ interface BuildRequestInput {
   parameterValues: Dictionary<string, string>;
   bodyInput?: BodyParameterValues | string;
   mockData?: MockData;
-  token: string;
   origin: string;
   auth?: HttpSecuritySchemeWithValues;
   chosenServer?: IServer | null;
@@ -61,7 +60,6 @@ export async function buildFetchRequest({
   bodyInput,
   parameterValues,
   mockData,
-  token,
   origin,
   auth,
   chosenServer,
@@ -101,10 +99,7 @@ export async function buildFetchRequest({
     ...Object.fromEntries(headersWithAuth.map(nameAndValueObjectToPair)),
     ...mockData?.header,
     ...(shouldUseProxyEndpoint
-      ? {
-        // 'X-Apihub-Authorization': token,
-        'X-Apihub-Proxy-Url': urlObject.href,
-      }
+      ? { 'X-Apihub-Proxy-Url': urlObject.href }
       : {}),
   }
 
