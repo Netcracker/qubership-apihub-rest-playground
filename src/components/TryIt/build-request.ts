@@ -65,7 +65,7 @@ export async function buildFetchRequest({
   origin,
   auth,
   chosenServer,
-  credentials = 'omit',
+  credentials = "include",
   corsProxy,
 }: BuildRequestInput): Promise<Parameters<typeof fetch>> {
   const serverUrl = getServerUrl({ httpOperation, mockData, chosenServer, corsProxy, origin })
@@ -81,7 +81,7 @@ export async function buildFetchRequest({
     .map(header => ({ name: header.name, value: parameterValues[header.name] ?? '' }))
     .filter(({ value }) => value.length > 0)
 
-  const [queryParamsWithAuth, headersWithAuth] = runAuthRequestEhancements(auth, queryParams, rawHeaders)
+  const [queryParamsWithAuth, headersWithAuth] = runAuthRequestEnhancements(auth, queryParams, rawHeaders)
 
   const expandedPath = uriExpand(httpOperation.path, parameterValues)
 
@@ -102,7 +102,7 @@ export async function buildFetchRequest({
     ...mockData?.header,
     ...(shouldUseProxyEndpoint
       ? {
-        'X-Apihub-Authorization': token,
+        // 'X-Apihub-Authorization': token,
         'X-Apihub-Proxy-Url': urlObject.href,
       }
       : {}),
@@ -119,7 +119,7 @@ export async function buildFetchRequest({
   ]
 }
 
-const runAuthRequestEhancements = (
+const runAuthRequestEnhancements = (
   auth: HttpSecuritySchemeWithValues | undefined,
   queryParams: NameAndValue[],
   headers: NameAndValue[],
@@ -205,7 +205,7 @@ export async function buildHarRequest({
     headerParams.push({ name: 'Prefer', value: mockData.header.Prefer })
   }
 
-  const [queryParamsWithAuth, headerParamsWithAuth] = runAuthRequestEhancements(auth, queryParams, headerParams)
+  const [queryParamsWithAuth, headerParamsWithAuth] = runAuthRequestEnhancements(auth, queryParams, headerParams)
   const expandedPath = uriExpand(httpOperation.path, parameterValues)
   const urlObject = new URL(serverUrl + expandedPath)
 
