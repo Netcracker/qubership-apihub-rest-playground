@@ -22,6 +22,7 @@ import {
   BodyParameterValues,
   createRequestBody,
 } from "./Body/request-body-utils";
+import { CookieStore } from "./cookie-store";
 import { MockData } from "./Mocking/mocking-utils";
 
 const PROXY_ENDPOINT = "/playground/proxy";
@@ -180,9 +181,9 @@ const runAuthRequestEnhancements = (
     }
 
     if (auth.scheme.in === "cookie") {
-      window.Cookies.set(auth.scheme.name, auth.authValue ?? "", {
+      CookieStore.set(auth.scheme.name, auth.authValue ?? "", {
         path: "/",
-        expires: new Date(Date.now() + 60_000),
+        maxAge: 60_000,
       });
     }
   }
