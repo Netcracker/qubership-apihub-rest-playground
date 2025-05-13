@@ -1,6 +1,6 @@
 # Qubership APIHUB REST Playground
 
-REST Playground is a REST API testing tool that allows you to send requests to the server using real data. 
+REST Playground is a UI component for REST API testing, which allows you to send requests to the server using real data. 
 It automatically extracts request parameters from the API specification, simplifying the testing process for users.
 
 ## Features
