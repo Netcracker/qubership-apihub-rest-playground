@@ -398,12 +398,20 @@ export const Playground: React.FC<PlaygroundProps> = ({
         <Button
           appearance="primary"
           loading={loading}
-          disabled={loading}
+          disabled={servers.length === 0 || loading}
           onPress={handleSendRequest}
           size="sm"
-          className="sl-button custom"
+          title={servers.length === 0 ? "Please add a server" : undefined}
+          className={`px-4 py-2 rounded-full font-bold text-white 
+              ${
+                servers.length === 0 || loading
+                  ? "bg-blue-300 cursor-not-allowed"
+                  : "bg-blue-600 hover:bg-blue-700"
+              }
+          transition-colors duration-200`}
         >
-          Send
+          {/* Send */}
+          {loading ? "Sending..." : "Send"}
         </Button>
       </div>
       {/*300px - height above content in portal, fix after migration to monaco*/}
