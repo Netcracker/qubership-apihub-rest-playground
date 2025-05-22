@@ -1,46 +1,91 @@
-import { useAtom } from 'jotai'
-import * as React from 'react'
-import { useCallback, useState } from 'react'
-import type { IServer } from '../../../utils/http-spec/IServer'
-import { chosenServerAtom } from '../chosenServer'
-import FormControl from '@mui/material/FormControl'
-import Select from '@mui/material/Select'
-import { Box, Button, MenuItem } from '@mui/material'
-import AddIcon from '@mui/icons-material/Add'
-import { nanoid } from 'nanoid'
-import { MenuItemContent } from '../MenuItemConten'
-import { createCustomService } from '../../events'
+/* eslint-disable prettier/prettier */
+/* eslint-disable simple-import-sort/imports */
+import { useAtom } from "jotai";
+import * as React from "react";
+import { useCallback, useMemo, useState } from "react";
+import type { IServer } from "../../../utils/http-spec/IServer";
+import { chosenServerAtom } from "../chosenServer";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogTitle,
+  IconButton,
+  MenuItem,
+  Tooltip,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { nanoid } from "nanoid";
+import { MenuItemContent } from "../MenuItemConten";
+import { createCustomService } from "../../events";
+import DeleteIcon from "@mui/icons-material/Delete";
 
 export type ServersDropdownProps = {
   servers: IServer[];
+  customServers: IServer[];
+  onDeleteServer?: (url: string) => void;
 };
 
-export const ServersDropdown = ({ servers }: ServersDropdownProps) => {
-  const [chosenServer, setChosenServer] = useAtom(chosenServerAtom)
 
-  const serverItems: IServer[] = servers.map(server => ({
-    url: server.url,
-    name: server.name || server.description,
-  }))
+
+export const ServersDropdown = ({
+  servers,
+  customServers,
+  onDeleteServer,
+}: ServersDropdownProps) => {
+  const [chosenServer, setChosenServer] = useAtom(chosenServerAtom);
+  const [open, setOpen] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+
+  const serverItems = useMemo(() => {
+    return servers.map((server) => ({
+      ...server,
+      name: server.url,
+      description: server.description || "",
+    }));
+  }, [servers]);
+
 
   const onChange = useCallback(
-    event => {
-      const server = servers.find(server => server.url === event.target.value)
-      setChosenServer(server)
+    (event: React.ChangeEvent<{ value: unknown }>) => {
+      const url = event.target.value as string;
+      const server = servers.find((server) => server.url === url);
+      if (server) setChosenServer(server);
+      setOpen(false)
     },
-    [servers, setChosenServer],
-  )
+    [servers, setChosenServer]
+  );
 
-  const defaultValue = serverItems[0]?.url ?? ''
+  const defaultValue = serverItems[0]?.url ?? "";
 
-  const [open, setOpen] = useState(false)
+  const handleDelete = (url: string, event: React.MouseEvent) => {
+    event.stopPropagation();
+    setDeleteTarget(url);
+  };
+
+  const handleConfirmDelete = () => {
+    if (deleteTarget) {
+      onDeleteServer?.(deleteTarget);
+      setDeleteTarget(null);
+    }
+  };
+
+  const handleDeleteDialogClose = () => {
+    setDeleteTarget(null);
+  };
 
   const handleClose = () => {
-    setOpen(false)
-  }
+    setOpen(false);
+  };
   const handleOpen = () => {
-    setOpen(true)
-  }
+    setOpen(true);
+  };
+
+  const isCustomUrl = (url: string) => customServers.some((s) => s.url === url);
+
 
   return (
     <Box>
@@ -50,43 +95,103 @@ export const ServersDropdown = ({ servers }: ServersDropdownProps) => {
           onClose={handleClose}
           onOpen={handleOpen}
           onChange={onChange}
-          value={chosenServer?.url ?? ''}
+          value={chosenServer?.url ?? ""}
           defaultValue={defaultValue}
-          renderValue={p => p}
+          renderValue={(value) => value || "Server"}
           className="MuiInputBase-root MuiSelect-select custom"
         >
-          {serverItems.map((server, index) => {
-            const { url, name } = server
+          {serverItems.map((server) => {
+            const { url, name } = server;
+            const isSelected = url === chosenServer?.url;
+            const isCustom = isCustomUrl(url);
             return (
               <MenuItem
-                key={nanoid(8)}
-                style={{ width: '100%', display: 'flex', alignItems: 'center' }}
+                // key={nanoid(8)}
+                key={url}
+                style={{
+                  width: "100%",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
                 value={url}
-                disableRipple
-                onClick={onChange}
-                selected={index === serverItems.indexOf(chosenServer!)}
+                
+                selected={isSelected}
               >
-                <MenuItemContent title={name} subtitle={url} maxWidth="400px"/>
+                <div
+                  style={{
+                    flexGrow: 1,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  <Tooltip
+                      title={url}
+                      placement="top-start"
+                      arrow
+                      enterDelay={300}
+                    >
+                      <Box>
+                        <MenuItemContent
+                          title={url}
+                          subtitle={server.description || "-"}
+                          maxWidth="400px"
+                        />
+                      </Box>
+                  </Tooltip>
+                </div>
+                {isCustom && (
+                  <IconButton
+                    size="small"
+                    onClick={(e) => {
+                      // e.stopPropagation();
+                      handleDelete(url, e);
+                      
+                    }}
+                    sx={{ ml: 1 }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                )}
               </MenuItem>
-            )
+            );
           })}
 
           <Button
             disableRipple
-            startIcon={<AddIcon/>}
+            startIcon={<AddIcon />}
             className="MuiButtonBase-root custom iconButton"
-            style={{ marginTop: '8px', color: '#0068FF', paddingLeft: '16px' }}
+            style={{ marginTop: "8px", color: "#0068FF", paddingLeft: "16px" }}
             onClick={() => {
-              setOpen(false)
-              document.dispatchEvent(createCustomService)
+              setOpen(false);
+              document.dispatchEvent(createCustomService);
             }}
           >
             Add Custom Server
           </Button>
         </Select>
       </FormControl>
-    </Box>
-  )
-}
 
-ServersDropdown.displayName = 'ServersDropdown'
+      <Dialog open={!!deleteTarget} onClose={handleDeleteDialogClose}>
+        <DialogTitle>
+          Delete <strong>{deleteTarget}</strong> server?
+        </DialogTitle>
+        <DialogActions>
+          <Button onClick={handleDeleteDialogClose} variant="outlined">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleConfirmDelete}
+            variant="contained"
+            color="error"
+          >
+            Remove
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+ServersDropdown.displayName = "ServersDropdown";
+
