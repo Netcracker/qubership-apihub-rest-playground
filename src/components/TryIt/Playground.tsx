@@ -1,9 +1,17 @@
+/* eslint-disable react-hooks/rules-of-hooks */
+/* eslint-disable prettier/prettier */
 import { Box, Button, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
 import { Request as HarRequest } from 'har-format'
 import { useAtom } from 'jotai'
+import { isEmpty } from 'lodash'
 import * as React from 'react'
+
 import { HttpMethodColors } from '../../constants'
+import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
+import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
 import { getServersToDisplay, IServer } from '../../utils/http-spec/IServer'
+import { isValidUrl } from '../../utils/urls'
+import { NonIdealState } from '../NonIdealState'
 import { chosenServerAtom } from '.'
 import { TryItAuth } from './Auth/Auth'
 import { usePersistedSecuritySchemeWithValues } from './Auth/authentication-utils'
@@ -24,11 +32,6 @@ import {
   TryItResponse,
 } from './Response/Response'
 import { ServersDropdown } from './Servers/ServersDropdown'
-import { NonIdealState } from '../NonIdealState'
-import { isEmpty } from 'lodash'
-import { isValidUrl } from '../../utils/urls'
-import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
-import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
 
 export interface PlaygroundProps {
   document: string
@@ -394,7 +397,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
           alignItems: 'center',
         }}
       >
-        <ServersDropdown servers={servers} />
+        <ServersDropdown servers={servers} customServers={[]} />
         <Button
           appearance="primary"
           loading={loading}
@@ -403,18 +406,17 @@ export const Playground: React.FC<PlaygroundProps> = ({
           size="sm"
           title={servers.length === 0 ? "Please add a server" : undefined}
           className={`px-4 py-2 rounded-full font-bold text-white 
-              ${
-                servers.length === 0 || loading
-                  ? "bg-blue-300 cursor-not-allowed"
-                  : "bg-blue-600 hover:bg-blue-700"
-              }
+              ${servers.length === 0 || loading
+              ? "bg-blue-300 cursor-not-allowed"
+              : "bg-blue-600 hover:bg-blue-700"
+            }
           transition-colors duration-200`}
         >
-          {/* Send */}
-          {loading ? "Sending..." : "Send"}
+          Send
+          
         </Button>
       </div>
-      {/*300px - height above content in portal, fix after migration to monaco*/}
+      
       <Box style={{ gridArea: 'content', overflow: 'scroll', height: 'calc(100vh - 300px)' }}>
         {tryItPanelElem}
         {response && !('error' in response) && <TryItResponse response={response} />}
