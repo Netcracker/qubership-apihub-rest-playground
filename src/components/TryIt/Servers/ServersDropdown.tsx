@@ -44,7 +44,7 @@ export const ServersDropdown = ({
     return servers.map((server) => ({
       ...server,
       name: server.url,
-      description: server.description || "",
+      description: server.description || "-",
     }));
   }, [servers]);
 
@@ -106,8 +106,7 @@ export const ServersDropdown = ({
             const isCustom = isCustomUrl(url);
             return (
               <MenuItem
-                // key={nanoid(8)}
-                key={url}
+                key={nanoid(8)}
                 style={{
                   width: "100%",
                   display: "flex",
@@ -115,10 +114,10 @@ export const ServersDropdown = ({
                   justifyContent: "space-between",
                 }}
                 value={url}
-                
+
                 selected={isSelected}
               >
-                <div
+                <Box
                   style={{
                     flexGrow: 1,
                     overflow: "hidden",
@@ -126,27 +125,26 @@ export const ServersDropdown = ({
                   }}
                 >
                   <Tooltip
-                      title={url}
-                      placement="top-start"
-                      arrow
-                      enterDelay={300}
-                    >
-                      <Box>
-                        <MenuItemContent
-                          title={url}
-                          subtitle={server.description || "-"}
-                          maxWidth="400px"
-                        />
-                      </Box>
+                    title={url}
+                    placement="top-start"
+                    arrow
+                    enterDelay={300}
+                  >
+                    <Box>
+                      <MenuItemContent
+                        title={url}
+                        subtitle={server.description || "-"}
+                        maxWidth="400px"
+                      />
+                    </Box>
                   </Tooltip>
-                </div>
+                </Box>
                 {isCustom && (
                   <IconButton
                     size="small"
                     onClick={(e) => {
-                      // e.stopPropagation();
                       handleDelete(url, e);
-                      
+
                     }}
                     sx={{ ml: 1 }}
                   >
