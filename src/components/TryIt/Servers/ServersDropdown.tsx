@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable prettier/prettier */
 /* eslint-disable simple-import-sort/imports */
 import { useAtom } from "jotai";
@@ -16,19 +17,22 @@ import {
   IconButton,
   MenuItem,
   Tooltip,
+  Typography,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { nanoid } from "nanoid";
-import { MenuItemContent } from "../MenuItemConten";
 import { createCustomService } from "../../events";
-import DeleteIcon from "@mui/icons-material/Delete";
+
+import Snackbar from "@mui/material/Snackbar";
+import MuiAlert from "@mui/material/Alert";
+import CloseIcon from '@mui/icons-material/Close'
+import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
 
 export type ServersDropdownProps = {
   servers: IServer[];
   customServers: IServer[];
   onDeleteServer?: (url: string) => void;
 };
-
 
 
 export const ServersDropdown = ({
@@ -39,37 +43,63 @@ export const ServersDropdown = ({
   const [chosenServer, setChosenServer] = useAtom(chosenServerAtom);
   const [open, setOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [hoveredUrl, setHoveredUrl] = useState<string | null>(null);
 
   const serverItems = useMemo(() => {
-    return servers.map((server) => ({
-      ...server,
-      name: server.url,
-      description: server.description || "-",
-    }));
-  }, [servers]);
+    const uniqueServersMap = new Map<string, IServer>(); // Use a Map for de-duplication
+
+    // Add API servers first.
+    servers.forEach(server => {
+      uniqueServersMap.set(server.url, {
+        ...server,
+        name: server.url,
+        description: server.description || "-",
+      });
+    });
+
+    // Add custom servers, overriding if URL already exists.
+    customServers.forEach(server => {
+      uniqueServersMap.set(server.url, {
+        ...server,
+        name: server.url,
+        description: server.description || "-",
+      });
+    });
+
+    // Convert map values back to an array
+    return Array.from(uniqueServersMap.values());
+  }, [servers, customServers]);
 
 
   const onChange = useCallback(
     (event: React.ChangeEvent<{ value: unknown }>) => {
       const url = event.target.value as string;
-      const server = servers.find((server) => server.url === url);
+      const server = serverItems.find((server) => server.url === url);
       if (server) setChosenServer(server);
       setOpen(false)
     },
-    [servers, setChosenServer]
+    [serverItems, setChosenServer] 
   );
 
-  const defaultValue = serverItems[0]?.url ?? "";
 
   const handleDelete = (url: string, event: React.MouseEvent) => {
     event.stopPropagation();
     setDeleteTarget(url);
   };
 
+  const handleDeleteServer = useCallback(
+    (serverToDelete: { url: string }) => {
+      // onDeleteServer prop is now the single point for triggering deletion in parent
+      onDeleteServer?.(serverToDelete.url);
+    },
+    [onDeleteServer]
+  );
   const handleConfirmDelete = () => {
     if (deleteTarget) {
-      onDeleteServer?.(deleteTarget);
+      handleDeleteServer({ url: deleteTarget })
       setDeleteTarget(null);
+      setShowSuccess(true);
     }
   };
 
@@ -84,7 +114,6 @@ export const ServersDropdown = ({
     setOpen(true);
   };
 
-  const isCustomUrl = (url: string) => customServers.some((s) => s.url === url);
 
 
   return (
@@ -96,100 +125,207 @@ export const ServersDropdown = ({
           onOpen={handleOpen}
           onChange={onChange}
           value={chosenServer?.url ?? ""}
-          defaultValue={defaultValue}
-          renderValue={(value) => value || "Server"}
+          displayEmpty
+          options={servers.map(server => ({
+            label: server.url,
+            value: server.url,
+          }))}
+          renderValue={(value) => {
+            if (!value) {
+              return <Typography sx={{ color: '#888' }}>Server</Typography>
+            }
+            value && typeof value === 'string' ? value :
+              <span style={{ color: '#888' }}>Server</span>
+            try {
+              // Display the full URL here
+              return (
+                <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", fontSize: 14 }}>
+                  <Typography component="span" sx={{ fontWeight: 600, color: "#000" }}>
+                    {value as string}
+                  </Typography>
+                </Box>
+              );
+            } catch {
+              return value;
+            }
+          }
+          }
           className="MuiInputBase-root MuiSelect-select custom"
+          MenuProps={{
+            PaperProps: {
+              sx: { minWidth: 340, maxWidth: 400 },
+            },
+          }}
         >
           {serverItems.map((server) => {
-            const { url, name } = server;
+            const { url, description, custom } = server;
             const isSelected = url === chosenServer?.url;
-            const isCustom = isCustomUrl(url);
             return (
               <MenuItem
                 key={nanoid(8)}
-                style={{
-                  width: "100%",
+                sx={{
                   display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
+                  flexDirection: "column",
+                  alignItems: "flex-start",
+                  px: 2,
+                  py: 1,
+                  gap: 0.5,
+                  position: "relative",
+                  "&:hover .delete-icon": { opacity: 1 },
                 }}
                 value={url}
-
                 selected={isSelected}
+                onMouseEnter={() => setHoveredUrl(url)}
+                onMouseLeave={() => setHoveredUrl(null)}
               >
                 <Box
-                  style={{
-                    flexGrow: 1,
+                  sx={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
+                  <Tooltip title={url} placement="top-start" arrow enterDelay={300}>
+                    <Typography variant="body2" noWrap sx={{ fontWeight: 500 }}>
+                      {url} {/* Display the full URL here */}
+                    </Typography>
+                  </Tooltip>
+                  
+                  {custom && (
+                    <IconButton
+                      size="small"
+                      onClick={(e) => {
+                        handleDelete(url, e);
+                      }}
+                      sx={{
+                        ml: 1,
+                        opacity: hoveredUrl === url ? 1 : 0,
+                        transition: "opacity 0.2s",
+                        color: "#1976d2",
+                        "&:hover": { color: "#d32f2f", background: "#f5f5f5" },
+                      }}
+                    >
+                      <DeleteOutlinedIcon sx={{ color: '#1976d2', cursor: 'pointer' }} />
+                    </IconButton>
+                  )}
+
+                </Box>
+                <Typography variant="caption" color="text.secondary" noWrap
+                  sx={{
+                    fontSize: "0.8rem",
+                    color: "#6b7280",
+                    ml: 0.2,
+                    mt: 0.3,
+                    maxWidth: "100%",
+                    whiteSpace: "nowrap",
                     overflow: "hidden",
                     textOverflow: "ellipsis",
                   }}
                 >
-                  <Tooltip
-                    title={url}
-                    placement="top-start"
-                    arrow
-                    enterDelay={300}
-                  >
-                    <Box>
-                      <MenuItemContent
-                        title={url}
-                        subtitle={server.description || "-"}
-                        maxWidth="400px"
-                      />
-                    </Box>
-                  </Tooltip>
-                </Box>
-                {isCustom && (
-                  <IconButton
-                    size="small"
-                    onClick={(e) => {
-                      handleDelete(url, e);
-
-                    }}
-                    sx={{ ml: 1 }}
-                  >
-                    <DeleteIcon fontSize="small" />
-                  </IconButton>
-                )}
+                  {description || "-"}
+                </Typography>
               </MenuItem>
             );
           })}
 
           <Button
             disableRipple
-            startIcon={<AddIcon />}
+            sx={{
+              mt: 1,
+              color: "#1976d2",
+              fontWeight: 500,
+              cursor: "pointer",
+              "&:hover": { background: "transparent", textDecoration: "underline" },
+            }}
             className="MuiButtonBase-root custom iconButton"
             style={{ marginTop: "8px", color: "#0068FF", paddingLeft: "16px" }}
             onClick={() => {
               setOpen(false);
               document.dispatchEvent(createCustomService);
             }}
+            startIcon={<AddIcon />}
           >
             Add Custom Server
           </Button>
         </Select>
+
       </FormControl>
 
-      <Dialog open={!!deleteTarget} onClose={handleDeleteDialogClose}>
-        <DialogTitle>
-          Delete <strong>{deleteTarget}</strong> server?
-        </DialogTitle>
-        <DialogActions>
-          <Button onClick={handleDeleteDialogClose} variant="outlined">
-            Cancel
-          </Button>
+      <Dialog open={!!deleteTarget} onClose={handleDeleteDialogClose}
+        PaperProps={{
+          sx: {
+            borderRadius: 3,
+            minWidth: 340,
+            p: 2,
+            boxShadow: 3,
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <DialogTitle sx={{ p: 0, fontWeight: 400, fontSize: 18, flex: 1 }}>
+            Delete <strong>{deleteTarget}</strong> server?
+          </DialogTitle>
+          <IconButton
+            onClick={handleDeleteDialogClose}
+            sx={{
+              ml: 1,
+              color: "grey.500",
+            }}
+            size="small"
+          >
+            <CloseIcon />
+          </IconButton>
+        </Box>
+        <DialogActions sx={{ justifyContent: "flex-start", pt: 2 }}>
           <Button
             onClick={handleConfirmDelete}
             variant="contained"
             color="error"
+            sx={{
+              borderRadius: 2,
+              boxShadow: "none",
+              textTransform: "none",
+              px: 3,
+              mr: 1,
+              fontWeight: 500,
+              fontSize: 15,
+            }}
           >
             Remove
           </Button>
+          <Button onClick={handleDeleteDialogClose} variant="outlined"
+            sx={{
+              borderRadius: 2,
+              textTransform: "none",
+              px: 3,
+              bgcolor: "#fff",
+              borderColor: "#E0E0E0",
+              color: "#333",
+              fontWeight: 500,
+              fontSize: 15,
+              "&:hover": {
+                bgcolor: "#fafafa",
+                borderColor: "#d3d3d3",
+              },
+            }}
+          >
+            Cancel
+          </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+      <Snackbar
+        open={showSuccess}
+        autoHideDuration={3000}
+        onClose={() => setShowSuccess(false)}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+      >
+        <MuiAlert onClose={() => setShowSuccess(false)} severity="success" elevation={6} variant="filled">
+          Server deleted successfully
+        </MuiAlert>
+      </Snackbar>
+    </Box >
   );
 };
 
 ServersDropdown.displayName = "ServersDropdown";
-

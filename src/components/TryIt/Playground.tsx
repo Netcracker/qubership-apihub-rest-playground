@@ -1,3 +1,4 @@
+/* eslint-disable simple-import-sort/imports */
 /* eslint-disable react-hooks/rules-of-hooks */
 /* eslint-disable prettier/prettier */
 import { Box, Button, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
@@ -5,7 +6,6 @@ import { Request as HarRequest } from 'har-format'
 import { useAtom } from 'jotai'
 import { isEmpty } from 'lodash'
 import * as React from 'react'
-
 import { HttpMethodColors } from '../../constants'
 import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
 import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
@@ -32,6 +32,7 @@ import {
   TryItResponse,
 } from './Response/Response'
 import { ServersDropdown } from './Servers/ServersDropdown'
+import { useEffect, useState } from 'react'
 
 export interface PlaygroundProps {
   document: string
@@ -120,7 +121,12 @@ export const Playground: React.FC<PlaygroundProps> = ({
 
   const [operationAuthValue, setOperationAuthValue] = usePersistedSecuritySchemeWithValues()
 
+  const [localCustomServers, setLocalCustomServers] = useState<IServer[]>(() => {
+    const saved = localStorage.getItem('apihub_custom_servers');
+    return saved ? JSON.parse(saved) : [];
+  });
   const httpOperationServers = httpOperation.servers
+
 
   const servers = React.useMemo(() => {
     const getFormattedUrls = (url: string, variables: Record<string, { enum?: string[], default?: string }>) => {
@@ -150,36 +156,31 @@ export const Playground: React.FC<PlaygroundProps> = ({
     const isAbsoluteURL = (url: string) => url.indexOf('://') > 0 || url.startsWith('//')
 
     const prepareCustomServers = (server: IServer) => {
-      let customServerProxyUrl = server?.url ? server.url.replace(/\/$/, '') : ''
+      let trimmedUrl = server?.url ? server.url.replace(/\/$/, '') : ''
       return [{
-        url: customServerProxyUrl,
+        url: trimmedUrl,
         description: server?.description,
         custom: true,
         shouldUseProxyEndpoint: isAbsoluteURL(server.url),
       }]
     }
 
-    const preparedCustomServers = customServers?.flatMap(server =>
+    const preparedCustomServers = localCustomServers?.flatMap(server =>
       prepareCustomServers(server)
     ) ?? []
 
-    const httpServersWithEnum = httpOperationServers?.flatMap(httpServer => {
-      if (httpServer?.variables) {
-        const formattedUrls = getFormattedUrls(httpServer.url, httpServer.variables)
-        return formattedUrls.map(formattedUrl => ({
-          ...httpServer,
-          url: formattedUrl,
-        }))
-      }
-      return [httpServer]
-    }) ?? []
+    const httpServersWithEnum: IServer[] = [] 
 
     const originalServers = customServers?.length
       ? [...preparedCustomServers, ...httpServersWithEnum]
       : httpServersWithEnum
 
     return getServersToDisplay(originalServers || defaultServers, mockUrl)
-  }, [httpOperationServers, mockUrl, customServers])
+  }, [localCustomServers, customServers?.length, mockUrl])
+
+  useEffect(() => {
+    localStorage.setItem('apihub_custom_servers', JSON.stringify(localCustomServers));
+  }, [localCustomServers]);
 
   const firstServer = servers[0] || null
   const [chosenServer, setChosenServer] = useAtom(chosenServerAtom)
@@ -375,6 +376,12 @@ export const Playground: React.FC<PlaygroundProps> = ({
     )
   }
 
+  const noServers = servers.length === 0;
+
+  const handleDeleteServer = (url: string) => {
+    setLocalCustomServers(prev => prev.filter(server => server.url !== url));
+  };
+
   return (
     <Box
       style={{
@@ -397,26 +404,36 @@ export const Playground: React.FC<PlaygroundProps> = ({
           alignItems: 'center',
         }}
       >
-        <ServersDropdown servers={servers} customServers={[]} />
-        <Button
-          appearance="primary"
-          loading={loading}
-          disabled={servers.length === 0 || loading}
-          onPress={handleSendRequest}
-          size="sm"
-          title={servers.length === 0 ? "Please add a server" : undefined}
-          className={`px-4 py-2 rounded-full font-bold text-white 
-              ${servers.length === 0 || loading
-              ? "bg-blue-300 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700"
-            }
-          transition-colors duration-200`}
-        >
-          Send
-          
-        </Button>
+        <ServersDropdown
+          servers={servers}
+          customServers={localCustomServers}
+          onDeleteServer={handleDeleteServer}
+        />
+        {noServers ? (
+          <Box title="Please add a server">
+            <Button
+              appearance="primary"
+              disabled
+              size="md"
+              className="px-4 py-2 rounded-full font-bold text-white bg-blue-300 cursor-not-allowed"
+            >
+              Send
+            </Button>
+          </Box>
+        ) : (
+          <Button
+            appearance="primary"
+            loading={loading}
+            disabled={loading}
+            onPress={handleSendRequest}
+            size="md"
+            className="px-4 py-2 rounded-full font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
+          >
+            Send
+          </Button>
+        )}
       </div>
-      
+      {/*300px - height above content in portal, fix after migration to monaco*/}
       <Box style={{ gridArea: 'content', overflow: 'scroll', height: 'calc(100vh - 300px)' }}>
         {tryItPanelElem}
         {response && !('error' in response) && <TryItResponse response={response} />}

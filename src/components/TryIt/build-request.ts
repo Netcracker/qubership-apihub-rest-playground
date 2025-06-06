@@ -2,6 +2,7 @@ import { Dictionary, IHttpOperation, IMediaTypeContent } from '@stoplight/types'
 import { Request as HarRequest } from 'har-format'
 
 import { getServerUrlWithDefaultValues, IServer } from '../../utils/http-spec/IServer'
+import { IAgent } from '../../state/agent'
 import {
   filterOutAuthorizationParams,
   HttpSecuritySchemeWithValues,
@@ -35,6 +36,7 @@ interface BuildRequestInput {
   chosenServer?: IServer | null;
   credentials?: 'omit' | 'include' | 'same-origin';
   corsProxy?: string;
+  proxyAgent?: IAgent; // Added proxyAgent to the input interface
 }
 
 const getServerUrl = ({
@@ -67,6 +69,7 @@ export async function buildFetchRequest({
   chosenServer,
   credentials = 'omit',
   corsProxy,
+  proxyAgent, 
 }: BuildRequestInput): Promise<Parameters<typeof fetch>> {
   const serverUrl = getServerUrl({ httpOperation, mockData, chosenServer, corsProxy, origin })
 
@@ -85,13 +88,14 @@ export async function buildFetchRequest({
 
   const expandedPath = uriExpand(httpOperation.path, parameterValues)
 
-  const shouldUseProxyEndpoint = chosenServer?.shouldUseProxyEndpoint
 
-  // urlObject is concatenated this way to avoid /user and /user/ endpoint edge cases
   const urlObject = new URL(serverUrl + expandedPath)
   urlObject.search = new URLSearchParams(queryParamsWithAuth.map(nameAndValueObjectToPair)).toString()
 
   const body = typeof bodyInput === 'object' ? await createRequestBody(mediaTypeContent, bodyInput) : bodyInput
+
+
+  const alwaysUseProxy = !!proxyAgent;
 
   const headers = {
     // do not include multipart/form-data - browser handles its content type and boundary
@@ -100,16 +104,16 @@ export async function buildFetchRequest({
     }),
     ...Object.fromEntries(headersWithAuth.map(nameAndValueObjectToPair)),
     ...mockData?.header,
-    ...(shouldUseProxyEndpoint
+    ...(alwaysUseProxy 
       ? {
         'X-Apihub-Authorization': token,
-        'X-Apihub-Proxy-Url': urlObject.href,
+        'X-Apihub-Proxy-Url': urlObject.href, 
       }
       : {}),
   }
 
   return [
-    shouldUseProxyEndpoint ? `${origin}${PROXY_ENDPOINT}` : urlObject.href,
+    alwaysUseProxy ? `${origin}${PROXY_ENDPOINT}` : urlObject.href, // Final URL for the fetch call
     {
       credentials,
       method: httpOperation.method.toUpperCase(),
@@ -186,7 +190,7 @@ export async function buildHarRequest({
   chosenServer,
   corsProxy,
   origin,
-}: Omit<BuildRequestInput, 'token'>): Promise<HarRequest> {
+}: Omit<BuildRequestInput, 'token' | 'proxyAgent'>): Promise<HarRequest> { 
   const serverUrl = getServerUrl({ httpOperation, mockData, chosenServer, corsProxy, origin })
 
   const mimeType = mediaTypeContent?.mediaType ?? 'application/json'
