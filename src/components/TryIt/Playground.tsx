@@ -32,7 +32,8 @@ import {
   TryItResponse,
 } from './Response/Response'
 import { ServersDropdown } from './Servers/ServersDropdown'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { Tooltip } from '@mui/material'
 
 export interface PlaygroundProps {
   document: string
@@ -127,6 +128,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
   });
   const httpOperationServers = httpOperation.servers
 
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const servers = React.useMemo(() => {
     const getFormattedUrls = (url: string, variables: Record<string, { enum?: string[], default?: string }>) => {
@@ -169,7 +171,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
       prepareCustomServers(server)
     ) ?? []
 
-    const httpServersWithEnum: IServer[] = [] 
+    const httpServersWithEnum: IServer[] = []
 
     const originalServers = customServers?.length
       ? [...preparedCustomServers, ...httpServersWithEnum]
@@ -410,16 +412,24 @@ export const Playground: React.FC<PlaygroundProps> = ({
           onDeleteServer={handleDeleteServer}
         />
         {noServers ? (
-          <Box title="Please add a server">
-            <Button
-              appearance="primary"
-              disabled
-              size="md"
-              className="px-4 py-2 rounded-full font-bold text-white bg-blue-300 cursor-not-allowed"
-            >
-              Send
-            </Button>
-          </Box>
+          <Tooltip title="Please add a server" arrow placement="top">
+            <Box>
+              <Button
+                appearance="primary"
+                disabled
+                size="md"
+                className="px-4 py-2 rounded-full font-bold text-white cursor-not-allowed"
+                sx={{
+                   "&.Mui-disabled": {
+                    backgroundColor: '#ADD8E6', 
+                    color: 'white',
+                   },
+                }}
+              >
+                Send
+              </Button>
+            </Box>
+          </Tooltip>
         ) : (
           <Button
             appearance="primary"
