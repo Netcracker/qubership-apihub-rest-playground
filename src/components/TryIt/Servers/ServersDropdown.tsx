@@ -79,7 +79,7 @@ export const ServersDropdown = ({
       if (server) setChosenServer(server);
       setOpen(false)
     },
-    [serverItems, setChosenServer] 
+    [serverItems, setChosenServer]
   );
 
 
@@ -134,20 +134,14 @@ export const ServersDropdown = ({
             if (!value) {
               return <Typography sx={{ color: '#888' }}>Server</Typography>
             }
-            value && typeof value === 'string' ? value :
-              <span style={{ color: '#888' }}>Server</span>
-            try {
-              // Display the full URL here
-              return (
-                <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", fontSize: 14 }}>
-                  <Typography component="span" sx={{ fontWeight: 600, color: "#000" }}>
-                    {value as string}
-                  </Typography>
-                </Box>
-              );
-            } catch {
-              return value;
-            }
+            // Display the full URL here
+            return (
+              <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", fontSize: 14 }}>
+                <Typography component="span" sx={{ fontWeight: 600, color: "#000" }}>
+                  {value}
+                </Typography>
+              </Box>
+            );
           }
           }
           className="MuiInputBase-root MuiSelect-select custom"
@@ -191,7 +185,7 @@ export const ServersDropdown = ({
                       {url} {/* Display the full URL here */}
                     </Typography>
                   </Tooltip>
-                  
+
                   {custom && (
                     <IconButton
                       size="small"
@@ -236,7 +230,6 @@ export const ServersDropdown = ({
               color: "#1976d2",
               fontWeight: 500,
               cursor: "pointer",
-              "&:hover": { background: "transparent", textDecoration: "underline" },
             }}
             className="MuiButtonBase-root custom iconButton"
             style={{ marginTop: "8px", color: "#0068FF", paddingLeft: "16px" }}
@@ -321,7 +314,7 @@ export const ServersDropdown = ({
         anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       >
         <MuiAlert onClose={() => setShowSuccess(false)} severity="success" elevation={6} variant="filled">
-          Server deleted successfully
+          Server has been deleted successfully
         </MuiAlert>
       </Snackbar>
     </Box >
