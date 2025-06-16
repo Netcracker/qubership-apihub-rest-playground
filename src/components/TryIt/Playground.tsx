@@ -128,8 +128,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
   });
   const httpOperationServers = httpOperation.servers
 
-  const [showTooltip, setShowTooltip] = useState(false);
-
   const servers = React.useMemo(() => {
     const getFormattedUrls = (url: string, variables: Record<string, { enum?: string[], default?: string }>) => {
       const enumVariables = Object.entries(variables || {})
