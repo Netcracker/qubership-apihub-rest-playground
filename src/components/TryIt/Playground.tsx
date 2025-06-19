@@ -34,6 +34,7 @@ import {
 import { ServersDropdown } from './Servers/ServersDropdown'
 import { useEffect, useRef, useState } from 'react'
 import { Tooltip } from '@mui/material'
+import { ButtonWithHint } from '../ButtonWithHint'
 
 export interface PlaygroundProps {
   document: string
@@ -410,24 +411,22 @@ export const Playground: React.FC<PlaygroundProps> = ({
           onDeleteServer={handleDeleteServer}
         />
         {noServers ? (
-          <Tooltip title="Please add a server" arrow placement="top">
-            <Box>
-              <Button
-                appearance="primary"
-                disabled
-                size="md"
-                className="px-4 py-2 rounded-full font-bold text-white cursor-not-allowed"
-                sx={{
-                   "&.Mui-disabled": {
-                    backgroundColor: '#ADD8E6', 
-                    color: 'white',
-                   },
-                }}
-              >
-                Send
-              </Button>
-            </Box>
-          </Tooltip>
+          <ButtonWithHint
+            hint="Please add a server"
+            TooltipProps={{ arrow: true, placement: "top" }}
+            disabled
+            size="md"
+            className="px-4 py-2 rounded-full font-bold text-white cursor-not-allowed"
+            sx={{
+              "&.Mui-disabled": {
+                backgroundColor: '#ADD8E6',
+                color: 'white',
+              },
+            }}
+          >
+            Send
+          </ButtonWithHint >
+
         ) : (
           <Button
             appearance="primary"
