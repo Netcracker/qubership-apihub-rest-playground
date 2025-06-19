@@ -4,13 +4,11 @@
 import { Box, Button, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
 import { Request as HarRequest } from 'har-format'
 import { useAtom } from 'jotai'
-import { isEmpty } from 'lodash'
 import * as React from 'react'
 import { HttpMethodColors } from '../../constants'
 import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
 import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
 import { getServersToDisplay, IServer } from '../../utils/http-spec/IServer'
-import { isValidUrl } from '../../utils/urls'
 import { NonIdealState } from '../NonIdealState'
 import { chosenServerAtom } from '.'
 import { TryItAuth } from './Auth/Auth'
@@ -33,7 +31,6 @@ import {
 } from './Response/Response'
 import { ServersDropdown } from './Servers/ServersDropdown'
 import { useEffect, useRef, useState } from 'react'
-import { Tooltip } from '@mui/material'
 import { ButtonWithHint } from '../ButtonWithHint'
 
 export interface PlaygroundProps {
@@ -127,7 +124,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
     const saved = localStorage.getItem('apihub_custom_servers');
     return saved ? JSON.parse(saved) : [];
   });
-  const httpOperationServers = httpOperation.servers
 
   const servers = React.useMemo(() => {
     const getFormattedUrls = (url: string, variables: Record<string, { enum?: string[], default?: string }>) => {
@@ -416,8 +412,13 @@ export const Playground: React.FC<PlaygroundProps> = ({
             TooltipProps={{ arrow: true, placement: "top" }}
             disabled
             size="md"
-            className="px-4 py-2 rounded-full font-bold text-white cursor-not-allowed"
             sx={{
+              px: 4, 
+              py: 2, 
+              borderRadius: '9999px', 
+              fontWeight: 'bold', 
+              color: 'white', 
+              backgroundColor: '#2563EB',
               "&.Mui-disabled": {
                 backgroundColor: '#ADD8E6',
                 color: 'white',
@@ -428,16 +429,27 @@ export const Playground: React.FC<PlaygroundProps> = ({
           </ButtonWithHint >
 
         ) : (
-          <Button
+          <ButtonWithHint
             appearance="primary"
             loading={loading}
             disabled={loading}
             onPress={handleSendRequest}
             size="md"
-            className="px-4 py-2 rounded-full font-bold text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-200"
+           sx={{
+              px: 4, 
+              py: 2, 
+              borderRadius: '9999px', 
+              fontWeight: 'bold', 
+              color: 'white', 
+              backgroundColor: '#2563EB',
+              '&:hover': {
+                backgroundColor: '#1D4ED8', 
+              },
+              transition: 'background-color 0.2s ease-in-out', 
+            }}
           >
             Send
-          </Button>
+          </ButtonWithHint>
         )}
       </div>
       {/*300px - height above content in portal, fix after migration to monaco*/}
