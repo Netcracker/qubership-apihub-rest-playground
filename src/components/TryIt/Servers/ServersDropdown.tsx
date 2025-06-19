@@ -126,21 +126,15 @@ export const ServersDropdown = ({
           onChange={onChange}
           value={chosenServer?.url ?? ""}
           displayEmpty
-          options={servers.map(server => ({
-            label: server.url,
-            value: server.url,
-          }))}
           renderValue={(value) => {
             if (!value) {
               return <Typography sx={{ color: '#888' }}>Server</Typography>
             }
             // Display the full URL here
             return (
-              <Box sx={{ display: "flex", flexWrap: "wrap", alignItems: "center", fontSize: 14 }}>
-                <Typography component="span" sx={{ fontWeight: 600, color: "#000" }}>
-                  {value}
-                </Typography>
-              </Box>
+              <Typography component="span" sx={{ fontWeight: 600, color: "#000" }}>
+                {value}
+              </Typography>
             );
           }
           }
