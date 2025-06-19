@@ -27,6 +27,7 @@ import Snackbar from "@mui/material/Snackbar";
 import MuiAlert from "@mui/material/Alert";
 import CloseIcon from '@mui/icons-material/Close'
 import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
+import { ButtonWithHint } from "src/components/ButtonWithHint";
 
 export type ServersDropdownProps = {
   servers: IServer[];
@@ -217,7 +218,7 @@ export const ServersDropdown = ({
             );
           })}
 
-          <Button
+          <ButtonWithHint
             disableRipple
             sx={{
               mt: 1,
@@ -234,7 +235,7 @@ export const ServersDropdown = ({
             startIcon={<AddIcon />}
           >
             Add Custom Server
-          </Button>
+          </ButtonWithHint>
         </Select>
 
       </FormControl>
