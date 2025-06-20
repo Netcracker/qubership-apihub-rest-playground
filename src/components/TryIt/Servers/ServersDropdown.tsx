@@ -270,34 +270,10 @@ export const ServersDropdown = ({
             onClick={handleConfirmDelete}
             variant="contained"
             color="error"
-            sx={{
-              borderRadius: 2,
-              boxShadow: "none",
-              textTransform: "none",
-              px: 3,
-              mr: 1,
-              fontWeight: 500,
-              fontSize: 15,
-            }}
           >
             Remove
           </Button>
-          <Button onClick={handleDeleteDialogClose} variant="outlined"
-            sx={{
-              borderRadius: 2,
-              textTransform: "none",
-              px: 3,
-              bgcolor: "#fff",
-              borderColor: "#E0E0E0",
-              color: "#333",
-              fontWeight: 500,
-              fontSize: 15,
-              "&:hover": {
-                bgcolor: "#fafafa",
-                borderColor: "#d3d3d3",
-              },
-            }}
-          >
+          <Button onClick={handleDeleteDialogClose} variant="outlined">
             Cancel
           </Button>
         </DialogActions>
