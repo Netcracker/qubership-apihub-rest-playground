@@ -45,7 +45,7 @@ export const ServersDropdown = ({
   const [open, setOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [hoveredUrl, setHoveredUrl] = useState<string | null>(null);
+  // const [hoveredUrl, setHoveredUrl] = useState<string | null>(null);
 
   const serverItems = useMemo(() => {
     const uniqueServersMap = new Map<string, IServer>(); // Use a Map for de-duplication
@@ -164,8 +164,8 @@ export const ServersDropdown = ({
                 }}
                 value={url}
                 selected={isSelected}
-                onMouseEnter={() => setHoveredUrl(url)}
-                onMouseLeave={() => setHoveredUrl(null)}
+                // onMouseEnter={() => setHoveredUrl(url)}
+                // onMouseLeave={() => setHoveredUrl(null)}
               >
                 <Box
                   sx={{
@@ -189,13 +189,20 @@ export const ServersDropdown = ({
                       }}
                       sx={{
                         ml: 1,
-                        opacity: hoveredUrl === url ? 1 : 0,
-                        transition: "opacity 0.2s",
-                        color: "#1976d2",
-                        "&:hover": { color: "#d32f2f", background: "#f5f5f5" },
+                        color: '#9e9e9e',
+                        transition: "opacity 0.2s background 0.2s",
+                        '&:hover': {
+                          color: "#1976d2",
+                          backgroundColor: '#f5f5f5',
+                        }
                       }}
                     >
-                      <DeleteOutlinedIcon sx={{ color: '#1976d2', cursor: 'pointer' }} />
+                      <DeleteOutlinedIcon 
+                      sx={{
+                        color: '#1976d2',
+                        cursor: 'pointer'
+                      }}
+                      />
                     </IconButton>
                   )}
 
