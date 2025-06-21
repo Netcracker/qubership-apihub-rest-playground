@@ -45,7 +45,7 @@ export const ServersDropdown = ({
   const [open, setOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [showSuccess, setShowSuccess] = useState(false);
-  // const [hoveredUrl, setHoveredUrl] = useState<string | null>(null);
+ 
 
   const serverItems = useMemo(() => {
     const uniqueServersMap = new Map<string, IServer>(); // Use a Map for de-duplication
@@ -91,7 +91,7 @@ export const ServersDropdown = ({
 
   const handleDeleteServer = useCallback(
     (serverToDelete: { url: string }) => {
-      // onDeleteServer prop is now the single point for triggering deletion in parent
+      
       onDeleteServer?.(serverToDelete.url);
     },
     [onDeleteServer]
@@ -164,8 +164,6 @@ export const ServersDropdown = ({
                 }}
                 value={url}
                 selected={isSelected}
-                // onMouseEnter={() => setHoveredUrl(url)}
-                // onMouseLeave={() => setHoveredUrl(null)}
               >
                 <Box
                   sx={{
