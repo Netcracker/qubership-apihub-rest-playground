@@ -271,7 +271,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
       })
       let response: Response | undefined
       try {
-        console.log('request', request)
         response = await fetch(...request)
       } catch (e: any) {
         setResponse({ error: new NetworkError(e.message) })
