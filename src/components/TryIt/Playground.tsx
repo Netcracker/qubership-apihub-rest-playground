@@ -64,7 +64,6 @@ export interface PlaygroundProps {
   tryItCredentialsPolicy?: 'omit' | 'include' | 'same-origin'
   corsProxy?: string
   customServers?: IServer[]
-  token: string
   origin: string
 }
 
@@ -79,7 +78,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
   tryItCredentialsPolicy,
   corsProxy,
   customServers,
-  token,
   origin,
 }) => {
   Playground.displayName = 'Playground'
@@ -266,7 +264,6 @@ export const Playground: React.FC<PlaygroundProps> = ({
         mediaTypeContent,
         bodyInput: formDataState.isFormDataBody ? getValues() : textRequestBody,
         mockData,
-        token,
         origin,
         auth: operationAuthValue,
         chosenServer,
