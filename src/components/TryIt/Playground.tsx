@@ -25,8 +25,6 @@ import {
 } from './Response/Response'
 import { ServersDropdown } from './Servers/ServersDropdown'
 import { NonIdealState } from '../NonIdealState'
-import { isEmpty } from 'lodash'
-import { isValidUrl } from '../../utils/urls'
 import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
 import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
 
@@ -170,7 +168,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
     }) ?? []
 
     const originalServers = customServers?.length
-      ? [...preparedCustomServers, ...httpServersWithEnum]
+      ? [...httpServersWithEnum, ...preparedCustomServers]
       : httpServersWithEnum
 
     return getServersToDisplay(originalServers || defaultServers, mockUrl)
