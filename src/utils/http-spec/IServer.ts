@@ -15,14 +15,11 @@ function isValidServer(server: ServerWithOptionalUrl): server is ServerWithOptio
 
 export const getServersToDisplay = (originalServers: IServer[], mockUrl?: string): IServer[] => {
   const servers = originalServers
-    .map<ServerWithOptionalUrl>((server, i) => {
-      const fallbackDescription =
-        originalServers.length === 1 ? 'Live Server' : `${server?.custom ? 'Custom ' : ''}Server ${i + 1}`
-
+    .map<ServerWithOptionalUrl>((server) => {
       return {
         ...server,
         url: getServerUrlWithDefaultValues(server),
-        description: server.description || fallbackDescription,
+        description: server.description ?? '-',
       }
     })
     .filter(isValidServer)

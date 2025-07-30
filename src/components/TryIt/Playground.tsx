@@ -146,7 +146,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
       let customServerProxyUrl = server?.url ? server.url.replace(/\/$/, '') : ''
       return [{
         url: customServerProxyUrl,
-        description: server?.description,
+        description: server?.description || '-',
         custom: true,
         shouldUseProxyEndpoint: isAbsoluteURL(server.url),
       }]
