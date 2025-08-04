@@ -18,6 +18,10 @@
     "./styles.css": {
       "import": "./dist/styles.min.css",
       "require": "./dist/styles.min.css"
+    },
+    "./index.css": {
+      "import": "./dist/styles.min.css",
+      "require": "./dist/styles.min.css"
     }
   },
   "engines": {
