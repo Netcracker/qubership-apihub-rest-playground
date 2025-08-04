@@ -3,7 +3,8 @@ import { Request as HarRequest } from 'har-format'
 import { useAtom } from 'jotai'
 import * as React from 'react'
 import { HttpMethodColors } from '../../constants'
-import { getServersToDisplay, IServer } from '../../utils/http-spec/IServer'
+import { IServer } from '../../utils/http-spec/IServer'
+import { useProcessedSpecServers, useProcessedCustomServers, useCombinedServers } from '../../hooks/useServerProcessing'
 import { chosenServerAtom } from '.'
 import { TryItAuth } from './Auth/Auth'
 import { usePersistedSecuritySchemeWithValues } from './Auth/authentication-utils'
@@ -62,8 +63,6 @@ export interface PlaygroundProps {
   origin: string
 }
 
-const defaultServers: IServer[] = []
-
 export const Playground: React.FC<PlaygroundProps> = ({
   document = '',
   mockUrl,
@@ -113,66 +112,9 @@ export const Playground: React.FC<PlaygroundProps> = ({
 
   const [operationAuthValue, setOperationAuthValue] = usePersistedSecuritySchemeWithValues()
 
-  const httpOperationServers = httpOperation.servers
-
-  const servers = React.useMemo(() => {
-    const getFormattedUrls = (url: string, variables: Record<string, { enum?: string[], default?: string }>) => {
-      const enumVariables = Object.entries(variables || {})
-        .filter(([_, variable]) => Array.isArray(variable.enum))
-        .map(([key, variable]) => ({ key, values: variable.enum! }))
-
-      if (enumVariables.length === 0) {
-        return [url]
-      }
-
-      const combinations = enumVariables.reduce<{ [key: string]: string }[]>((acc, { key, values }) => {
-        return acc.flatMap(combination =>
-          values.map(value => ({ ...combination, [key]: value }))
-        )
-      }, [{}])
-
-      return combinations.map(combination => {
-        let formattedUrl = url
-        for (const [key, value] of Object.entries(combination)) {
-          formattedUrl = formattedUrl.replace(`{${key}}`, value)
-        }
-        return formattedUrl
-      })
-    }
-
-    const isAbsoluteURL = (url: string) => url.indexOf('://') > 0 || url.startsWith('//')
-
-    const prepareCustomServers = (server: IServer) => {
-      let customServerProxyUrl = server?.url ? server.url.replace(/\/$/, '') : ''
-      return [{
-        url: customServerProxyUrl,
-        description: server?.description || '-',
-        custom: true,
-        shouldUseProxyEndpoint: isAbsoluteURL(server.url),
-      }]
-    }
-
-    const preparedCustomServers = customServers?.flatMap(server =>
-      prepareCustomServers(server)
-    ) ?? []
-
-    const httpServersWithEnum = httpOperationServers?.flatMap(httpServer => {
-      if (httpServer?.variables) {
-        const formattedUrls = getFormattedUrls(httpServer.url, httpServer.variables)
-        return formattedUrls.map(formattedUrl => ({
-          ...httpServer,
-          url: formattedUrl,
-        }))
-      }
-      return [httpServer]
-    }) ?? []
-
-    const originalServers = customServers?.length
-      ? [...httpServersWithEnum, ...preparedCustomServers]
-      : httpServersWithEnum
-
-    return getServersToDisplay(originalServers || defaultServers, mockUrl)
-  }, [httpOperationServers, mockUrl, customServers])
+  const processedSpecServers = useProcessedSpecServers(httpOperation.servers)
+  const processedCustomServers = useProcessedCustomServers(customServers)
+  const servers = useCombinedServers(processedSpecServers, processedCustomServers, mockUrl)
 
   const firstServer = servers[0] || null
   const [chosenServer, setChosenServer] = useAtom(chosenServerAtom)
@@ -191,13 +133,15 @@ export const Playground: React.FC<PlaygroundProps> = ({
       }, {})
 
   React.useEffect(() => {
+    console.log('First server:', firstServer)
+    console.log('Current chosen server:', chosenServer)
     const currentUrl = chosenServer?.url
 
     // simple attempt to preserve / sync up active server if the URLs are the same between re-renders / navigation
     const exists = currentUrl && servers.find(s => s.url === currentUrl)
     if (!exists) {
       setChosenServer(firstServer)
-    } else if (exists !== chosenServer) {
+    } else if (exists && exists.url !== chosenServer.url) {
       setChosenServer(exists)
     }
   }, [servers, firstServer, chosenServer, setChosenServer])
@@ -248,7 +192,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
   const handleSendRequest = async () => {
     setValidateParameters(true)
 
-    if (hasRequiredButEmptyParameters) {
+    if (!chosenServer || hasRequiredButEmptyParameters) {
       return
     }
 
