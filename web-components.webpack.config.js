@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   mode: 'production',
@@ -46,6 +47,10 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
+    }),
+    new MonacoWebpackPlugin({
+      languages: ['javascript', 'typescript', 'json', 'html', 'css'],
+      features: ['!gotoSymbol'], // исключаем ненужные функции
     }),
   ],
 }
