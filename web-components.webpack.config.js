@@ -49,7 +49,9 @@ module.exports = {
       {
         test: /\.css$/,
         include: [
-          path.resolve(__dirname, 'node_modules/monaco-editor/esm/vs')
+          path.resolve(__dirname, "node_modules/monaco-editor/dev/vs"),
+          path.resolve(__dirname, "node_modules/monaco-editor/min/vs"),
+          path.resolve(__dirname, "node_modules/monaco-editor/esm/vs"),
         ],
         use: [
           'style-loader',
