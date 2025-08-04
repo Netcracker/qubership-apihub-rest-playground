@@ -9,8 +9,14 @@
   "main": "./dist/index.js",
   "types": "./typings/index.d.ts",
   "exports": {
-    "./index.css": "./dist/styles.min.css",
-    ".": "./dist/index.js"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./styles.css": {
+      "import": "./dist/styles.min.css",
+      "require": "./dist/styles.min.css"
+    }
   },
   "engines": {
     "node": ">=14.13"
