@@ -11,7 +11,6 @@ module.exports = {
       './src/web-components/index.ts',
       'monaco-editor/dev/vs/editor/editor.main.css',
     ],
-    styles: './src/web-components/monaco-styles.js' // точка входа только для CSS
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
@@ -40,29 +39,36 @@ module.exports = {
         include: /node_modules/,
         resolve: { fullySpecified: false },
       },
-      // CSS Monaco Editor: извлекаем в отдельный файл
       {
         test: /\.css$/,
-        include: /node_modules\/monaco-editor/,
+        include: [
+          path.resolve(__dirname, 'node_modules/monaco-editor/dev/vs'),
+          path.resolve(__dirname, 'node_modules/monaco-editor/min/vs'),
+        ],
         use: [
           MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
-            options: {
-              modules: false,
-              url: true
-            }
+            options: { modules: false, url: true }
           }
         ]
       },
-      // Шрифты codicon
+      {
+        test: /\.css$/,
+        include: path.resolve(__dirname, 'node_modules/monaco-editor/esm/vs'),
+        use: [
+          MiniCssExtractPlugin.loader,
+          {
+            loader: 'css-loader',
+            options: { modules: false, url: false }
+          }
+        ]
+      },
       {
         test: /\.(ttf|woff2?)$/,
         include: /node_modules\/monaco-editor/,
         type: 'asset/resource',
-        generator: {
-          filename: 'static/media/[name][ext]'
-        }
+        generator: { filename: 'static/media/[name][ext]' }
       },
       {
         test: /\.tsx?$/,
