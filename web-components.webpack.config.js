@@ -2,10 +2,17 @@ const path = require('path')
 const webpack = require('webpack')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
   mode: 'production',
-  entry: './src/web-components/index.ts',
+  entry: {
+    index: [
+      './src/web-components/index.ts',
+      'monaco-editor/dev/vs/editor/editor.main.css',
+    ],
+    styles: './src/web-components/monaco-styles.js' // точка входа только для CSS
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     plugins: [new TsconfigPathsPlugin()],
@@ -22,7 +29,7 @@ module.exports = {
     maxAssetSize: 2000000,
   },
   output: {
-    filename: 'index.js',
+    filename: '[name].js',
     path: path.join(process.cwd(), 'dist'),
     publicPath: '',
   },
@@ -33,35 +40,22 @@ module.exports = {
         include: /node_modules/,
         resolve: { fullySpecified: false },
       },
-      // Основной CSS Monaco Editor (темы, подсветка, codicons)
-      {
-        test: /editor\.main\.css$/,
-        include: /node_modules\/monaco-editor/,
-        use: [
-          'style-loader',
-          {
-            loader: 'css-loader',
-            options: { modules: false, url: true }
-          }
-        ]
-      },
-      // CSS из esm/vs (inlineCompletions, inspectTokens и др.)
+      // CSS Monaco Editor: извлекаем в отдельный файл
       {
         test: /\.css$/,
-        include: [
-          path.resolve(__dirname, "node_modules/monaco-editor/dev/vs"),
-          path.resolve(__dirname, "node_modules/monaco-editor/min/vs"),
-          path.resolve(__dirname, "node_modules/monaco-editor/esm/vs"),
-        ],
+        include: /node_modules\/monaco-editor/,
         use: [
-          'style-loader',
+          MiniCssExtractPlugin.loader,
           {
             loader: 'css-loader',
-            options: { modules: false, url: false }
+            options: {
+              modules: false,
+              url: true
+            }
           }
         ]
       },
-      // Шрифты codicon из Monaco
+      // Шрифты codicon
       {
         test: /\.(ttf|woff2?)$/,
         include: /node_modules\/monaco-editor/,
@@ -81,6 +75,9 @@ module.exports = {
   plugins: [
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
+    }),
+    new MiniCssExtractPlugin({
+      filename: 'styles.css'
     }),
     new MonacoWebpackPlugin({
       languages: ['javascript', 'typescript', 'json', 'html', 'css'],
