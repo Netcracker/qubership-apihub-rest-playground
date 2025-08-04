@@ -10,6 +10,7 @@ module.exports = {
     index: [
       './src/web-components/index.ts',
       'monaco-editor/dev/vs/editor/editor.main.css',
+      'monaco-editor/min/vs/editor/editor.main.css',
     ],
   },
   resolve: {
