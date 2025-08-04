@@ -24,6 +24,7 @@ module.exports = {
   output: {
     filename: 'index.js',
     path: path.join(process.cwd(), 'dist'),
+    publicPath: '',
   },
   module: {
     rules: [
@@ -32,6 +33,19 @@ module.exports = {
         include: /node_modules/,
         resolve: { fullySpecified: false },
       },
+      // Основной CSS Monaco Editor (темы, подсветка, codicons)
+      {
+        test: /editor\.main\.css$/,
+        include: /node_modules\/monaco-editor/,
+        use: [
+          'style-loader',
+          {
+            loader: 'css-loader',
+            options: { modules: false, url: true }
+          }
+        ]
+      },
+      // CSS из esm/vs (inlineCompletions, inspectTokens и др.)
       {
         test: /\.css$/,
         include: [
@@ -41,12 +55,18 @@ module.exports = {
           'style-loader',
           {
             loader: 'css-loader',
-            options: {
-              modules: false,
-              url: false
-            }
+            options: { modules: false, url: false }
           }
         ]
+      },
+      // Шрифты codicon из Monaco
+      {
+        test: /\.(ttf|woff2?)$/,
+        include: /node_modules\/monaco-editor/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'static/media/[name][ext]'
+        }
       },
       {
         test: /\.tsx?$/,
@@ -63,6 +83,7 @@ module.exports = {
     new MonacoWebpackPlugin({
       languages: ['javascript', 'typescript', 'json', 'html', 'css'],
       features: ['!gotoSymbol'],
+      publicPath: ''
     }),
   ],
 }
