@@ -15,3 +15,4 @@ export { isHttpOperation, isHttpService } from './utils/guards'
 export * from './utils/ref-resolving'
 export { slugify } from './utils/string'
 export { createElementClass } from './web-components/createElementClass'
+import './styles.css';
