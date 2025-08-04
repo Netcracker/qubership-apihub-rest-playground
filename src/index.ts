@@ -15,3 +15,5 @@ export { isHttpOperation, isHttpService } from './utils/guards'
 export * from './utils/ref-resolving'
 export { slugify } from './utils/string'
 export { createElementClass } from './web-components/createElementClass'
+import 'monaco-editor/esm/vs/editor/editor.main.css';
+import 'monaco-editor/esm/vs/editor/editor.main.nls.css';

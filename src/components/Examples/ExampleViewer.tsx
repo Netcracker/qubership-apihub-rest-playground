@@ -24,6 +24,7 @@ export const ExampleViewer: FC<ExampleViewerProps> = memo<ExampleViewerProps>(({
       height="100%"
       defaultLanguage="json"
       value={example}
+      theme="light"
       options={{
         readOnly: true,
         cursorStyle: 'line',
