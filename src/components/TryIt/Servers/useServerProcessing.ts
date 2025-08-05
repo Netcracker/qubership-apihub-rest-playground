@@ -1,10 +1,10 @@
 import { isEmpty } from 'lodash'
 import { useMemo } from 'react'
 
-import { isProperUrl } from '../utils/guards'
-import { IServer } from '../utils/http-spec/IServer'
-import { replacePlaceholders } from '../utils/string'
-import { useRecalculationLogger } from './usePerformanceLogger'
+import { useRecalculationLogger } from '../../../hooks/usePerformanceLogger'
+import { isProperUrl } from '../../../utils/guards'
+import { IServer } from '../../../utils/http-spec/IServer'
+import { replacePlaceholders } from '../../../utils/string'
 
 /**
  * Hook for processing servers from OpenAPI specification.
@@ -144,7 +144,7 @@ function processServers(servers: IServer[], isCustom = false): IServer[] {
       url: isCustom ? removeTrailingSlash(server.url) : getServerUrlWithDefaultValues(server),
       description: server.description || '-',
       custom: isCustom,
-      shouldUseProxyEndpoint: true,
+      shouldUseProxyEndpoint: server.shouldUseProxyEndpoint || true,
     }
   })
 }
