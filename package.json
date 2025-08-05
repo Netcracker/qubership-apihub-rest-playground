@@ -39,6 +39,7 @@
     "@emotion/styled": "11.10.6",
     "@fortawesome/free-solid-svg-icons": "^6.1.1",
     "@monaco-editor/react": "4.5.2",
+    "monaco-editor": "^0.52.2",
     "@mui/icons-material": "5.11.9",
     "@mui/lab": "5.0.0-alpha.120",
     "@mui/material": "5.11.10",
