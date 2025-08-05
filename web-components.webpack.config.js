@@ -1,95 +1,95 @@
-const path = require('path')
-const webpack = require('webpack')
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin')
-const MiniCssExtractPlugin = require('mini-css-extract-plugin')
+const path = require("path");
+const webpack = require("webpack");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 module.exports = {
-  mode: 'production',
+  mode: "production",
   entry: {
     index: [
-      './src/web-components/index.ts',
-      'monaco-editor/dev/vs/editor/editor.main.css',
-      'monaco-editor/min/vs/editor/editor.main.css',
-    ],
+      "./src/web-components/index.ts",
+      "monaco-editor/dev/vs/editor/editor.main.css",
+      "monaco-editor/min/vs/editor/editor.main.css"
+    ]
   },
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.jsx'],
+    extensions: [".tsx", ".ts", ".js", ".jsx"],
     plugins: [new TsconfigPathsPlugin()],
     fallback: {
       stream: false,
       path: false,
-      process: require.resolve('process/browser'),
-      querystring: require.resolve('querystring-es3'),
-    },
+      process: require.resolve("process/browser"),
+      querystring: require.resolve("querystring-es3")
+    }
   },
-  devtool: 'source-map',
+  devtool: "source-map",
   performance: {
     maxEntrypointSize: 2000000,
-    maxAssetSize: 2000000,
+    maxAssetSize: 2000000
   },
   output: {
-    filename: '[name].js',
-    path: path.join(process.cwd(), 'dist'),
-    publicPath: '',
+    filename: "[name].js",
+    path: path.join(process.cwd(), "dist"),
+    publicPath: "",
+    globalObject: "this",
+    libraryTarget: "umd"
   },
   module: {
     rules: [
       {
         test: /\.mjs$/,
         include: /node_modules/,
-        resolve: { fullySpecified: false },
+        resolve: { fullySpecified: false }
       },
       {
         test: /\.css$/,
         include: [
-          path.resolve(__dirname, 'node_modules/monaco-editor/dev/vs'),
-          path.resolve(__dirname, 'node_modules/monaco-editor/min/vs'),
+          path.resolve(__dirname, "node_modules/monaco-editor")
         ],
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: 'css-loader',
-            options: { modules: false, url: true }
+            loader: "css-loader",
+            options: {
+              modules: false,
+              import: true,
+              url: false // Отключаем обработку url() для простоты
+            }
           }
         ]
       },
       {
-        test: /\.css$/,
-        include: path.resolve(__dirname, 'node_modules/monaco-editor/esm/vs'),
-        use: [
-          MiniCssExtractPlugin.loader,
-          {
-            loader: 'css-loader',
-            options: { modules: false, url: false }
-          }
-        ]
-      },
-      {
-        test: /\.(ttf|woff2?)$/,
-        include: /node_modules\/monaco-editor/,
-        type: 'asset/resource',
-        generator: { filename: 'static/media/[name][ext]' }
+        test: /\.(ttf|eot|woff|woff2)$/,
+        include: [
+          path.resolve(__dirname, "node_modules/monaco-editor")
+        ],
+        type: "asset/inline"
       },
       {
         test: /\.tsx?$/,
-        loader: 'ts-loader',
+        loader: "ts-loader",
         exclude: /node_modules/,
-        options: { transpileOnly: true },
-      },
-    ],
+        options: { transpileOnly: true }
+      }
+    ]
   },
   plugins: [
     new webpack.ProvidePlugin({
-      process: require.resolve('process/browser'),
+      process: require.resolve("process/browser")
     }),
     new MiniCssExtractPlugin({
-      filename: 'styles.css'
+      filename: "monaco-editor.css"
     }),
     new MonacoWebpackPlugin({
-      languages: ['javascript', 'typescript', 'json', 'html', 'css'],
-      features: ['!gotoSymbol'],
-      publicPath: ''
-    }),
+      // Указываем языки, которые используем
+      languages: ["javascript", "typescript", "json", "css", "html"],
+      // Встраиваем workers в основной бандл
+      globalObject: "self"
+    })
   ],
-}
+  externals: {
+    "react": "react",
+    "react-dom": "react-dom"
+  }
+};

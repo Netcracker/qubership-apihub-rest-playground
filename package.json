@@ -15,9 +15,9 @@
       "import": "./dist/index.js",
       "require": "./dist/index.js"
     },
-    "./styles.css": {
-      "import": "./dist/styles.min.css",
-      "require": "./dist/styles.min.css"
+    "./monaco-editor.css": {
+      "import": "./dist/monaco-editor.css",
+      "require": "./dist/monaco-editor.css"
     },
     "./index.css": {
       "import": "./dist/styles.min.css",
