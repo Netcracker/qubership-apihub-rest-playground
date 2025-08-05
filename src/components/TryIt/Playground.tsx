@@ -1,5 +1,5 @@
-import { Box } from '@mui/material'
-import { Box as BoxMosaic, Button, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
+import { Box, ThemeProvider } from '@mui/material'
+import { Box as BoxMosaic, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
 import { Request as HarRequest } from 'har-format'
 import { useAtom } from 'jotai'
 import { FC, useEffect, useState } from 'react'
@@ -7,7 +7,9 @@ import { FC, useEffect, useState } from 'react'
 import { HttpMethodColors } from '../../constants'
 import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
 import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
+import { theme } from '../../themes/theme'
 import { IServer } from '../../utils/http-spec/IServer'
+import { ButtonWithHint } from '../ButtonWithHint'
 import { NonIdealState } from '../NonIdealState'
 import { chosenServerAtom } from '.'
 import { TryItAuth } from './Auth/Auth'
@@ -318,42 +320,46 @@ export const Playground: FC<PlaygroundProps> = ({
   }
 
   return (
-    <Box
-      style={{
-        display: 'grid',
-        gridTemplateRows: 'auto 1fr',
-        gridTemplateAreas: `
+    <ThemeProvider theme={theme}>
+      <Box
+        style={{
+          display: 'grid',
+          gridTemplateRows: 'auto 1fr',
+          gridTemplateAreas: `
           'dropdown'
           'content'
         `,
-        marginLeft: '8px',
-        marginTop: '16px',
-      }}
-    >
-      <Box
-        display="grid"
-        gridTemplateColumns="auto 50px"
-        gap={1}
-        alignItems="center"
+          marginLeft: '8px',
+          marginTop: '16px',
+        }}
       >
-        <ServersDropdown servers={servers} />
-        <Button
-          appearance="primary"
-          loading={loading}
-          disabled={loading}
-          onPress={handleSendRequest}
-          size="sm"
-          className="sl-button custom"
+        <Box
+          display="grid"
+          gridTemplateColumns="auto 50px"
+          gap={1}
+          alignItems="center"
         >
-          Send
-        </Button>
+          <ServersDropdown servers={servers} />
+          <ButtonWithHint
+            title="Send"
+            hint={!chosenServer ? 'Please add a server' : ''}
+            variant="contained"
+            isLoading={loading}
+            disabled={!chosenServer}
+            onClick={handleSendRequest}
+            sx={{
+              minWidth: '50px',
+              width: '100%',
+            }}
+          />
+        </Box>
+        {/*300px - height above content in portal, fix after migration to monaco*/}
+        <Box overflow="auto" height="calc(100vh - 300px)">
+          {tryItPanelElem}
+          {response && !('error' in response) && <TryItResponse response={response} />}
+          {response && 'error' in response && <ResponseError state={response} />}
+        </Box>
       </Box>
-      {/*300px - height above content in portal, fix after migration to monaco*/}
-      <Box overflow="auto" height="calc(100vh - 300px)">
-        {tryItPanelElem}
-        {response && !('error' in response) && <TryItResponse response={response} />}
-        {response && 'error' in response && <ResponseError state={response} />}
-      </Box>
-    </Box>
+    </ThemeProvider>
   )
 }
