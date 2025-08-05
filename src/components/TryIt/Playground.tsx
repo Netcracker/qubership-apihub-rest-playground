@@ -1,10 +1,14 @@
-import { Box, Button, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
+import { Box } from '@mui/material'
+import { Box as BoxMosaic, Button, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
 import { Request as HarRequest } from 'har-format'
 import { useAtom } from 'jotai'
-import * as React from 'react'
+import { FC, useEffect, useState } from 'react'
+
 import { HttpMethodColors } from '../../constants'
+import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
+import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
 import { IServer } from '../../utils/http-spec/IServer'
-import { useProcessedSpecServers, useProcessedCustomServers, useCombinedServers } from '../../hooks/useServerProcessing'
+import { NonIdealState } from '../NonIdealState'
 import { chosenServerAtom } from '.'
 import { TryItAuth } from './Auth/Auth'
 import { usePersistedSecuritySchemeWithValues } from './Auth/authentication-utils'
@@ -25,9 +29,7 @@ import {
   TryItResponse,
 } from './Response/Response'
 import { ServersDropdown } from './Servers/ServersDropdown'
-import { NonIdealState } from '../NonIdealState'
-import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
-import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
+import { useCombinedServers, useProcessedCustomServers, useProcessedSpecServers } from './Servers/useServerProcessing'
 
 export interface PlaygroundProps {
   document: string
@@ -63,7 +65,7 @@ export interface PlaygroundProps {
   origin: string
 }
 
-export const Playground: React.FC<PlaygroundProps> = ({
+export const Playground: FC<PlaygroundProps> = ({
   document = '',
   mockUrl,
   onRequestChange,
@@ -90,11 +92,11 @@ export const Playground: React.FC<PlaygroundProps> = ({
     )
   }
 
-  const [response, setResponse] = React.useState<ResponseState | ErrorState | undefined>()
-  const [, setRequestData] = React.useState<HarRequest | undefined>()
+  const [response, setResponse] = useState<ResponseState | ErrorState | undefined>()
+  const [, setRequestData] = useState<HarRequest | undefined>()
 
-  const [loading, setLoading] = React.useState<boolean>(false)
-  const [validateParameters, setValidateParameters] = React.useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
+  const [validateParameters, setValidateParameters] = useState<boolean>(false)
 
   const mediaTypeContent = httpOperation.request?.body?.contents?.[requestBodyIndex ?? 0]
 
@@ -132,7 +134,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
         return previousValue
       }, {})
 
-  React.useEffect(() => {
+  useEffect(() => {
     console.log('First server:', firstServer)
     console.log('Current chosen server:', chosenServer)
     const currentUrl = chosenServer?.url
@@ -146,7 +148,7 @@ export const Playground: React.FC<PlaygroundProps> = ({
     }
   }, [servers, firstServer, chosenServer, setChosenServer])
 
-  React.useEffect(() => {
+  useEffect(() => {
     let isMounted = true
     if (onRequestChange || embeddedInMd) {
       buildHarRequest({
@@ -242,31 +244,33 @@ export const Playground: React.FC<PlaygroundProps> = ({
     <>
       <Panel.Content className="SendButtonHolder" mt={0} pt={!isOnlySendButton && !embeddedInMd ? 0 : undefined}>
         {validateParameters && hasRequiredButEmptyParameters && (
-          <Box mt={4} color="danger-light" fontSize="sm">
+          <BoxMosaic mt={4} color="danger-light" fontSize="sm">
             <Icon icon={['fas', 'exclamation-triangle']} className="sl-mr-1" />
             You didn't provide all of the required parameters!
-          </Box>
+          </BoxMosaic>
         )}
       </Panel.Content>
-      <Box style={{ overflow: 'scroll', height: '100%' }}>
-        {httpOperation.security?.length ? (
+      {httpOperation.security?.length
+        ? (
           <TryItAuth
             onChange={setOperationAuthValue}
             operationSecurityScheme={httpOperation.security ?? []}
             value={operationAuthValue}
           />
-        ) : null}
+        )
+        : null}
 
-        {allParameters.length > 0 && (
-          <OperationParameters
-            parameters={allParameters}
-            values={parameterValuesWithDefaults}
-            onChangeValue={updateParameterValue}
-            validate={validateParameters}
-          />
-        )}
+      {allParameters.length > 0 && (
+        <OperationParameters
+          parameters={allParameters}
+          values={parameterValuesWithDefaults}
+          onChangeValue={updateParameterValue}
+          validate={validateParameters}
+        />
+      )}
 
-        {formDataState.isFormDataBody ? (
+      {formDataState.isFormDataBody
+        ? (
           <FormDataBody
             specification={formDataState.bodySpecification}
             values={bodyParameterValues}
@@ -274,14 +278,16 @@ export const Playground: React.FC<PlaygroundProps> = ({
             onChangeParameterAllow={setAllowedEmptyValues}
             isAllowedEmptyValues={isAllowedEmptyValues}
           />
-        ) : mediaTypeContent ? (
+        )
+        : mediaTypeContent
+        ? (
           <RequestBody
             examples={mediaTypeContent.examples ?? []}
             requestBody={textRequestBody}
             onChange={setTextRequestBody}
           />
-        ) : null}
-      </Box>
+        )
+        : null}
     </>
   )
 
@@ -292,12 +298,12 @@ export const Playground: React.FC<PlaygroundProps> = ({
     tryItPanelElem = (
       <Panel isCollapsible={false} p={0} className="TryItPanel">
         <Panel.Titlebar bg="canvas-300" className="Titlebar">
-          <Box fontWeight="bold" color={!isDark ? HttpMethodColors[httpOperation.method] : undefined}>
+          <BoxMosaic fontWeight="bold" color={!isDark ? HttpMethodColors[httpOperation.method] : undefined}>
             {httpOperation.method.toUpperCase()}
-          </Box>
-          <Box fontWeight="medium" ml={2} textOverflow="truncate" overflowX="hidden">
+          </BoxMosaic>
+          <BoxMosaic fontWeight="medium" ml={2} textOverflow="truncate" overflowX="hidden">
             {`${chosenServer?.url || ''}${httpOperation.path}`}
-          </Box>
+          </BoxMosaic>
         </Panel.Titlebar>
 
         {tryItPanelContents}
@@ -305,9 +311,9 @@ export const Playground: React.FC<PlaygroundProps> = ({
     )
   } else {
     tryItPanelElem = (
-      <Box className="TryItPanel" bg="canvas-100" rounded="lg">
+      <BoxMosaic className="TryItPanel" bg="canvas-100" rounded="lg">
         {tryItPanelContents}
-      </Box>
+      </BoxMosaic>
     )
   }
 
@@ -324,14 +330,11 @@ export const Playground: React.FC<PlaygroundProps> = ({
         marginTop: '16px',
       }}
     >
-      <div
-        style={{
-          gridArea: 'dropdown',
-          display: 'grid',
-          gridTemplateColumns: 'auto 50px',
-          gap: '8px',
-          alignItems: 'center',
-        }}
+      <Box
+        display="grid"
+        gridTemplateColumns="auto 50px"
+        gap={1}
+        alignItems="center"
       >
         <ServersDropdown servers={servers} />
         <Button
@@ -344,9 +347,9 @@ export const Playground: React.FC<PlaygroundProps> = ({
         >
           Send
         </Button>
-      </div>
+      </Box>
       {/*300px - height above content in portal, fix after migration to monaco*/}
-      <Box style={{ gridArea: 'content', overflow: 'scroll', height: 'calc(100vh - 300px)' }}>
+      <Box overflow="auto" height="calc(100vh - 300px)">
         {tryItPanelElem}
         {response && !('error' in response) && <TryItResponse response={response} />}
         {response && 'error' in response && <ResponseError state={response} />}
