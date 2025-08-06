@@ -46,12 +46,16 @@ module.exports = {
         test: /\.css$/,
         use: ['style-loader', 'css-loader']
       },
+      {
+        test: /\.ttf$/,
+        type: 'asset/resource'
+      },
     ],
   },
   plugins: [
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
-    new MonacoWebpackPlugin()
+    new MonacoWebpackPlugin({languages :["json"], publicPath: '/'})
   ],
 }
