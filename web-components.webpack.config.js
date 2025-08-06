@@ -24,7 +24,7 @@ module.exports = {
   output: {
     filename: 'index.js',
     path: path.join(process.cwd(), 'dist'),
-    publicPath: ''
+    publicPath: 'auto'
   },
   module: {
     rules: [
