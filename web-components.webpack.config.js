@@ -24,7 +24,7 @@ module.exports = {
   output: {
     filename: 'index.js',
     path: path.join(process.cwd(), 'dist'),
-    publicPath: path.resolve(__dirname, '/node_modules/@netcracker/qubership-apihub-rest-playground/dist')
+    publicPath: 'auto'
   },
   module: {
     rules: [
