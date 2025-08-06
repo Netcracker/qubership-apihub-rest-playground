@@ -26,7 +26,8 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "umd",
     library: "qubership-apihub-rest-playground",
-    publicPath: 'auto'
+    publicPath: 'auto',
+    assetModuleFilename: 'fonts/[hash][ext][query]'
   },
   module: {
     rules: [
@@ -50,8 +51,8 @@ module.exports = {
         use: ['style-loader', 'css-loader']
       },
       {
-        test: /\.ttf$/,
-        type: 'asset/resource'
+        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|eot|ttf|otf)$/i,
+        type: 'asset/resource',
       },
     ],
   },
