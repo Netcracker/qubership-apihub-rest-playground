@@ -24,7 +24,7 @@ module.exports = {
   output: {
     filename: 'index.js',
     path: path.join(process.cwd(), 'dist'),
-    publicPath: 'auto'
+    publicPath: ''
   },
   module: {
     rules: [
@@ -57,6 +57,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
-    new MonacoWebpackPlugin({languages :["json"], publicPath: '/'})
+    new MonacoWebpackPlugin({languages :["json"]})
   ],
 }
