@@ -26,7 +26,7 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "umd",
     library: "qubership-apihub-rest-playground",
-    publicPath: ''
+    publicPath: '/'
   },
   module: {
     rules: [
