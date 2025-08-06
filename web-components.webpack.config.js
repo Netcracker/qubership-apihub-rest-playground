@@ -25,8 +25,7 @@ module.exports = {
     filename: "index.js",
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "umd",
-    library: "qubership-apihub-rest-playground",
-    globalObject: "this"
+    library: "qubership-apihub-rest-playground"
   },
   module: {
     rules: [
