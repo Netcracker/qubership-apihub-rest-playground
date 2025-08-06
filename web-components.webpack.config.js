@@ -11,7 +11,6 @@ module.exports = {
     plugins: [new TsconfigPathsPlugin()],
     fallback: {
       stream: false,
-      path: false,
       process: require.resolve('process/browser'),
       querystring: require.resolve('querystring-es3'),
     },
@@ -21,10 +20,13 @@ module.exports = {
     maxEntrypointSize: 2000000,
     maxAssetSize: 2000000,
   },
+  node: { global: true},
   output: {
-    filename: 'index.js',
-    path: path.join(process.cwd(), 'dist'),
-    publicPath: ''
+    filename: "index.js",
+    path: path.resolve(__dirname, "dist"),
+    libraryTarget: "umd",
+    library: "qubership-apihub-rest-playground",
+    globalObject: "this"
   },
   module: {
     rules: [
