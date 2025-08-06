@@ -1,6 +1,7 @@
 const path = require('path')
 const webpack = require('webpack')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   mode: 'production',
@@ -47,5 +48,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
+    new MonacoWebpackPlugin()
   ],
 }

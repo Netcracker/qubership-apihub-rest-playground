@@ -1,6 +1,9 @@
 import React, { FC, memo } from 'react'
 import { Typography } from '@mui/material'
 import { Editor } from '@monaco-editor/react'
+import { loader } from '@monaco-editor/react'
+
+loader.config({ paths: { vs: '../../../node_modules/monaco-editor' } });
 
 export type ExampleViewerProps = {
   example: string;
