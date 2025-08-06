@@ -17,4 +17,4 @@ export { slugify } from './utils/string'
 export { createElementClass } from './web-components/createElementClass'
 
 // @ts-ignore
-__webpack_public_path__ = document.currentScript?.src.replace(/\/[^/]+\.js$/, '/') || '';
+// __webpack_public_path__ = document.currentScript?.src.replace(/\/[^/]+\.js$/, '/') || '';
