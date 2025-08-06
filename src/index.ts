@@ -15,6 +15,3 @@ export { isHttpOperation, isHttpService } from './utils/guards'
 export * from './utils/ref-resolving'
 export { slugify } from './utils/string'
 export { createElementClass } from './web-components/createElementClass'
-
-// @ts-ignore
-// __webpack_public_path__ = document.currentScript?.src.replace(/\/[^/]+\.js$/, '/') || '';

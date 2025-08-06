@@ -20,12 +20,13 @@ module.exports = {
     maxEntrypointSize: 2000000,
     maxAssetSize: 2000000,
   },
-  node: { global: true},
+  node: { global: true },
   output: {
     filename: "index.js",
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "umd",
-    library: "qubership-apihub-rest-playground"
+    library: "qubership-apihub-rest-playground",
+    publicPath: ''
   },
   module: {
     rules: [
