@@ -55,9 +55,12 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.optimize.LimitChunkCountPlugin({
+      maxChunks: 1,
+    }),
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
-    new MonacoWebpackPlugin({languages :["json"]})
+    new MonacoWebpackPlugin({languages :["json"] })
   ],
 }
