@@ -27,7 +27,6 @@ module.exports = {
     libraryTarget: "umd",
     library: "qubership-apihub-rest-playground",
     publicPath: 'auto',
-    assetModuleFilename: 'fonts/[hash][ext][query]'
   },
   module: {
     rules: [
