@@ -27,7 +27,6 @@ module.exports = {
     libraryTarget: "umd",
     library: "qubership-apihub-rest-playground",
     publicPath: 'auto',
-    globalObject: "this",
   },
   module: {
     rules: [
