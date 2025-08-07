@@ -8,7 +8,7 @@ import React, { useCallback, useState } from 'react'
 import { DeleteIcon } from '../../../icons/DeleteIcon'
 import type { IServer } from '../../../utils/http-spec/IServer'
 import { ButtonWithHint } from '../../ButtonWithHint'
-import { createCustomService } from '../../events'
+import { createCustomServer, deleteCustomServer } from '../../events'
 import { chosenServerAtom } from '../chosenServer'
 import { MenuItemContent } from '../MenuItemContent'
 
@@ -44,14 +44,14 @@ export const ServersDropdown = ({ servers }: ServersDropdownProps) => {
 
   const handleServerAdd = useCallback(() => {
     setOpen(false)
-    document.dispatchEvent(createCustomService)
+    document.dispatchEvent(createCustomServer)
   }, [])
 
   const handleServerDelete = useCallback((server: IServer) => (event: React.MouseEvent) => {
     event.stopPropagation()
     if (server.custom) {
-      console.log('delete server', server)
-      // TODO: Implement actual server deletion logic
+      setOpen(false)
+      document.dispatchEvent(deleteCustomServer({ url: server.url }))
     }
   }, [])
 
@@ -74,6 +74,8 @@ export const ServersDropdown = ({ servers }: ServersDropdownProps) => {
         renderValue={p => p}
         // TODO: review styles
         inputProps={{ sx: { py: '1px', fontWeight: 500, fontSize: 12, lineHeght: '16px', color: '#000000' } }}
+        aria-label="Server"
+        data-testid="ServerSelect"
       >
         {servers.map((server, index) => {
           const { url, description, custom } = server

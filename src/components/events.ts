@@ -1,5 +1,5 @@
-export const CREATE_CUSTOM_SERVICE_EVENT = 'createCustomService'
-export const createCustomService = new CustomEvent(CREATE_CUSTOM_SERVICE_EVENT, {
+export const CREATE_CUSTOM_SERVER_EVENT = 'createCustomServer'
+export const createCustomServer = new CustomEvent(CREATE_CUSTOM_SERVER_EVENT, {
   composed: true,
   bubbles: true,
 })
@@ -9,3 +9,11 @@ export const openFullscreenExamplesPopup = new CustomEvent(OPEN_FULLSCREEN_EXAMP
   composed: true,
   bubbles: true,
 })
+
+export const DELETE_CUSTOM_SERVER_EVENT = 'deleteCustomServer'
+export const deleteCustomServer = (server: { url: string }) =>
+  new CustomEvent(DELETE_CUSTOM_SERVER_EVENT, {
+    detail: server,
+    composed: true,
+    bubbles: true,
+  })
