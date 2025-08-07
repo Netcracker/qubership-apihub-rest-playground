@@ -1,6 +1,5 @@
 import { LoadingButton } from '@mui/lab'
-import { Button, IconButton } from '@mui/material'
-import Box from '@mui/material/Box'
+import { Box, Button, IconButton } from '@mui/material'
 import type { ButtonProps } from '@mui/material/Button/Button'
 import Tooltip from '@mui/material/Tooltip'
 import type { FC, ReactElement, ReactNode } from 'react'
@@ -11,7 +10,7 @@ export type ButtonWithHintProps = {
   isLoading?: boolean
   title?: string
   startIcon?: ReactElement
-  ['area-label']?: string
+  hintMaxWidth?: number | string
 } & ButtonProps
 
 export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>((
@@ -20,6 +19,7 @@ export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>
     isLoading,
     hint,
     startIcon,
+    hintMaxWidth,
     ...buttonProps
   },
 ) => {
@@ -59,6 +59,9 @@ export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>
   return (
     <Tooltip
       title={hint}
+      PopperProps={{
+        sx: { '.MuiTooltip-tooltip': { maxWidth: hintMaxWidth } },
+      }}
     >
       {/* MUI disables mouse events for disabled elements. `display: 'inline'` resolves this with minimal layout impact. */}
       <Box display="inline">

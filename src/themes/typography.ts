@@ -1,5 +1,7 @@
 import type { TypographyOptions } from '@mui/material/styles/createTypography'
 
+import { COLOR_TEXT_SECONDARY } from './colors'
+
 export function createTypography(): TypographyOptions {
   return {
     fontFamily: 'Inter',
@@ -21,7 +23,7 @@ export function createTypography(): TypographyOptions {
     subtitle2: {
       fontSize: 12,
       fontWeight: 400,
-      color: '#626D82',
+      color: COLOR_TEXT_SECONDARY,
     },
   }
 }

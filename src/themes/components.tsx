@@ -1,39 +1,10 @@
 import type { Components } from '@mui/material/styles/components'
 
-import { COLOR_TEXT_DEFAULT } from './colors'
+import { COLOR_TEXT_DEFAULT, COLOR_TEXT_SECONDARY } from './colors'
 import { PAPER_SHADOW_DEFAULT } from './palette'
 
 export function createComponents(): Components {
   return {
-    MuiAutocomplete: {
-      defaultProps: {
-        componentsProps: {
-          paper: {
-            elevation: 8,
-          },
-        },
-      },
-      styleOverrides: {
-        root: {
-          width: '100%',
-        },
-        paper: {
-          borderRadius: 10,
-        },
-        listbox: {
-          fontSize: 13,
-          color: 'black',
-        },
-        noOptions: {
-          fontSize: 13,
-          color: 'black',
-        },
-        tag: {
-          marginTop: -6,
-          marginBottom: 0,
-        },
-      },
-    },
     MuiButton: {
       defaultProps: {
         disableElevation: true,
@@ -51,12 +22,12 @@ export function createComponents(): Components {
           },
         },
         outlined: {
-          color: '#353C4E',
+          color: COLOR_TEXT_DEFAULT,
           borderColor: '#D5DCE3',
           boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
           '&:hover': {
             boxShadow: '0px 2px 4px rgba(0, 0, 0, 0.05)',
-            color: '#353C4E',
+            color: COLOR_TEXT_DEFAULT,
             borderColor: '#D5DCE3',
             backgroundColor: '#F9F9F9',
           },
@@ -146,7 +117,6 @@ export function createComponents(): Components {
     },
     MuiList: {
       defaultProps: {
-        disablePadding: true,
       },
       styleOverrides: {
         root: {
@@ -184,6 +154,13 @@ export function createComponents(): Components {
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         },
+        secondary: {
+          fontSize: 12,
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          color: COLOR_TEXT_SECONDARY,
+        },
       },
     },
     MuiMenu: {
@@ -215,7 +192,7 @@ export function createComponents(): Components {
       styleOverrides: {
         paper: {
           marginTop: 4,
-          borderRadius: 10,
+          borderRadius: 6,
           boxShadow: PAPER_SHADOW_DEFAULT,
         },
       },
@@ -263,14 +240,14 @@ export function createComponents(): Components {
       },
       styleOverrides: {
         tooltip: {
-          backgroundColor: '#FFFFFF',
-          color: '#000000',
+          backgroundColor: 'white',
+          color: 'black',
           boxShadow: '0 6px 20px rgba(0,0,0,.15),0 0 2px rgba(0,0,0,.2)',
           fontSize: 13,
           fontWeight: 400,
         },
         arrow: {
-          color: '#FFFFFF',
+          color: 'white',
           '&:before': {
             boxShadow: '0 6px 20px rgba(0,0,0,.15),0 0 2px rgba(0,0,0,.2)',
           },
