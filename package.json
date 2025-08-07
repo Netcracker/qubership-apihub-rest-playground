@@ -10,7 +10,7 @@
   "types": "./typings/index.d.ts",
   "exports": {
     "./index.css": "./dist/styles.min.css",
-    ".": "./dist/"
+    ".": "./dist/index.js"
   },
   "engines": {
     "node": ">=14.13"
