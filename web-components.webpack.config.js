@@ -62,6 +62,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
-    new MonacoWebpackPlugin({languages :["json"], features: ['!gotoSymbol'], publicPath:'/dist/' })
+    new MonacoWebpackPlugin({languages :["json"], features: ['!gotoSymbol'], publicPath:'/monaco-worker/' })
   ],
 }
