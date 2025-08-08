@@ -20,13 +20,13 @@ module.exports = {
     maxEntrypointSize: 2000000,
     maxAssetSize: 2000000,
   },
-  node: { global: true },
   output: {
     filename: "index.js",
     path: path.resolve(__dirname, "dist"),
     libraryTarget: "umd",
     library: "qubership-apihub-rest-playground",
     publicPath: 'auto',
+    globalObject: 'this',
   },
   module: {
     rules: [
@@ -62,6 +62,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
-    new MonacoWebpackPlugin({languages :["json"] })
+    new MonacoWebpackPlugin({languages :["json"], features: ['!gotoSymbol'], publicPath:'/dist/' })
   ],
 }
