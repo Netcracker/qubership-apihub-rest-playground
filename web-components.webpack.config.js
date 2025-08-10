@@ -30,9 +30,8 @@ module.exports = {
     filename: "index.js",
     path: path.resolve(__dirname, "dist"),
     publicPath: 'auto',
-    globalObject: 'this',
     library: {
-      name: 'qubership-apihub-rest-playground', // Имя глобальной переменной
+      name: 'qubership-apihub-rest-playground',
       type: 'umd',
     },
   },
