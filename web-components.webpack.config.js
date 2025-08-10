@@ -5,7 +5,13 @@ const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   mode: 'production',
-  entry: './src/web-components/index.ts',
+  entry: {
+    index: [
+      "./src/web-components/index.ts",
+      "monaco-editor/dev/vs/editor/editor.main.css",
+      "monaco-editor/min/vs/editor/editor.main.css"
+    ]
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     plugins: [new TsconfigPathsPlugin()],
@@ -23,10 +29,12 @@ module.exports = {
   output: {
     filename: "index.js",
     path: path.resolve(__dirname, "dist"),
-    libraryTarget: "umd",
-    library: "qubership-apihub-rest-playground",
     publicPath: 'auto',
     globalObject: 'this',
+    library: {
+      name: 'qubership-apihub-rest-playground', // Имя глобальной переменной
+      type: 'umd',
+    },
   },
   module: {
     rules: [
@@ -47,11 +55,17 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: ['style-loader', 'css-loader'],
+        include: [
+          path.resolve(__dirname, "node_modules/monaco-editor")
+        ],
       },
       {
         test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
+        include: [
+          path.resolve(__dirname, "node_modules/monaco-editor")
+        ],
       },
     ],
   },
@@ -62,6 +76,6 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
-    new MonacoWebpackPlugin({languages :["json"], features: ['!gotoSymbol'], publicPath:'/monaco-worker/' })
+    // new MonacoWebpackPlugin({languages :["json"], features: ['!gotoSymbol'], publicPath:'./' })
   ],
 }
