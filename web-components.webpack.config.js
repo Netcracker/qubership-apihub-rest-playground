@@ -59,13 +59,20 @@ module.exports = {
           path.resolve(__dirname, "node_modules/monaco-editor")
         ],
       },
+      // {
+      //   test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|eot|ttf|otf)$/i,
+      //   type: 'asset/resource',
+      //   include: [
+      //     path.resolve(__dirname, "node_modules/monaco-editor")
+      //   ],
+      // },
       {
-        test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|eot|ttf|otf)$/i,
-        type: 'asset/resource',
+        test: /\.(ttf|woff|woff2|eot|otf)$/i,
+        type: 'asset/inline',
         include: [
           path.resolve(__dirname, "node_modules/monaco-editor")
         ],
-      },
+      }
     ],
   },
   plugins: [
