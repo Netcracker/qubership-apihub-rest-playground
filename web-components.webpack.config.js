@@ -1,15 +1,14 @@
 const path = require('path')
 const webpack = require('webpack')
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 
 module.exports = {
   mode: 'production',
   entry: {
     index: [
-      "./src/web-components/index.ts",
-      "monaco-editor/dev/vs/editor/editor.main.css",
-      "monaco-editor/min/vs/editor/editor.main.css"
+      './src/web-components/index.ts',
+      'monaco-editor/dev/vs/editor/editor.main.css',
+      'monaco-editor/min/vs/editor/editor.main.css'
     ]
   },
   resolve: {
@@ -27,7 +26,7 @@ module.exports = {
     maxAssetSize: 2000000,
   },
   output: {
-    filename: "index.js",
+    filename: 'index.js',
     path: path.resolve(__dirname, "dist"),
     publicPath: 'auto',
     library: {
@@ -59,13 +58,6 @@ module.exports = {
           path.resolve(__dirname, "node_modules/monaco-editor")
         ],
       },
-      // {
-      //   test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|eot|ttf|otf)$/i,
-      //   type: 'asset/resource',
-      //   include: [
-      //     path.resolve(__dirname, "node_modules/monaco-editor")
-      //   ],
-      // },
       {
         test: /\.(ttf|woff|woff2|eot|otf)$/i,
         type: 'asset/inline',
@@ -82,6 +74,5 @@ module.exports = {
     new webpack.ProvidePlugin({
       process: require.resolve('process/browser'),
     }),
-    // new MonacoWebpackPlugin({languages :["json"], features: ['!gotoSymbol'], publicPath:'./' })
   ],
 }
