@@ -15,5 +15,3 @@ export { isHttpOperation, isHttpService } from './utils/guards'
 export * from './utils/ref-resolving'
 export { slugify } from './utils/string'
 export { createElementClass } from './web-components/createElementClass'
-
-// __webpack_public_path__ = new URL('.', import.meta.url).toString().slice('169464042bf2c8bf9eae.ts');
