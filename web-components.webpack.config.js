@@ -4,13 +4,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 module.exports = {
   mode: 'production',
-  entry: {
-    index: [
-      './src/web-components/index.ts',
-      'monaco-editor/dev/vs/editor/editor.main.css',
-      'monaco-editor/min/vs/editor/editor.main.css'
-    ]
-  },
+  entry: './src/web-components/index.ts',
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.jsx'],
     plugins: [new TsconfigPathsPlugin()],
