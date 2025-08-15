@@ -1,18 +1,29 @@
 import AddIcon from '@mui/icons-material/Add'
-import { Button, MenuItem } from '@mui/material'
+import { Box, Button, MenuItem } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import { useAtom } from 'jotai'
 import React, { useCallback, useState } from 'react'
 
 import { DeleteIcon } from '../../../icons/DeleteIcon'
+import { COLOR_TEXT_PRIMARY } from '../../../themes/colors'
 import type { IServer } from '../../../utils/http-spec/IServer'
 import { ButtonWithHint } from '../../ButtonWithHint'
 import { createCustomServer, deleteCustomServer } from '../../events'
 import { chosenServerAtom } from '../chosenServer'
 import { MenuItemContent } from '../MenuItemContent'
+import { OverflowTooltip } from '../OverflowTooltip'
 
 const MENU_ITEM_MAX_WIDTH = 400
+
+const STYLE_SELECT_VALUE = {
+  overflow: 'hidden',
+  textOverflow: 'ellipsis',
+  whiteSpace: 'nowrap',
+  fontWeight: 500,
+  fontSize: 12,
+  color: COLOR_TEXT_PRIMARY,
+}
 
 const STYLE_MENU_ITEM = {
   display: 'flex',
@@ -22,6 +33,8 @@ const STYLE_MENU_ITEM = {
     visibility: 'visible',
   },
 }
+
+const selectInputProps = { sx: { py: '1px' } } // align input and button height
 
 export type ServersDropdownProps = {
   servers: IServer[]
@@ -71,9 +84,14 @@ export const ServersDropdown = ({ servers }: ServersDropdownProps) => {
         onChange={handleServerChange}
         value={chosenServer?.url ?? ''}
         defaultValue={defaultValue}
-        renderValue={p => p}
-        // TODO: review styles
-        inputProps={{ sx: { py: '1px', fontWeight: 500, fontSize: 12, lineHeght: '16px', color: '#000000' } }}
+        renderValue={(p) => (
+          <OverflowTooltip title={p}>
+            <Box sx={STYLE_SELECT_VALUE}>
+              {p}
+            </Box>
+          </OverflowTooltip>
+        )}
+        inputProps={selectInputProps}
         aria-label="Server"
         data-testid="ServerSelect"
       >
