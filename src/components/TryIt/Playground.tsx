@@ -339,7 +339,7 @@ export const Playground: FC<PlaygroundProps> = ({
           gap={1}
           alignItems="center"
         >
-          <ServersDropdown servers={servers} />
+          <ServersDropdown servers={servers} operationPath={httpOperation.path}/>
           <ButtonWithHint
             title="Send"
             hint={!chosenServer ? 'Please add a server' : ''}

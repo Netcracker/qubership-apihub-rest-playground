@@ -6,7 +6,7 @@ import { useAtom } from 'jotai'
 import React, { useCallback, useState } from 'react'
 
 import { DeleteIcon } from '../../../icons/DeleteIcon'
-import { COLOR_TEXT_PRIMARY } from '../../../themes/colors'
+import { COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY } from '../../../themes/colors'
 import type { IServer } from '../../../utils/http-spec/IServer'
 import { ButtonWithHint } from '../../ButtonWithHint'
 import { createCustomServer, deleteCustomServer } from '../../events'
@@ -38,9 +38,10 @@ const selectInputProps = { sx: { py: '1px' } } // align input and button height
 
 export type ServersDropdownProps = {
   servers: IServer[]
+  operationPath: string
 }
 
-export const ServersDropdown = ({ servers }: ServersDropdownProps) => {
+export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps) => {
   const [chosenServer, setChosenServer] = useAtom(chosenServerAtom)
 
   const defaultValue = servers[0]?.url ?? ''
@@ -85,9 +86,12 @@ export const ServersDropdown = ({ servers }: ServersDropdownProps) => {
         value={chosenServer?.url ?? ''}
         defaultValue={defaultValue}
         renderValue={(p) => (
-          <OverflowTooltip title={p}>
+          <OverflowTooltip title={p + operationPath}>
             <Box sx={STYLE_SELECT_VALUE}>
               {p}
+              <Box component="span" sx={{ color: COLOR_TEXT_SECONDARY }}>
+                {operationPath}
+              </Box>
             </Box>
           </OverflowTooltip>
         )}
