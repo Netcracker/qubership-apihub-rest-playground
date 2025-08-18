@@ -1,3 +1,4 @@
+import { Dictionary, INodeVariable } from '@stoplight/types'
 import { isEmpty } from 'lodash'
 import { useMemo } from 'react'
 
@@ -11,40 +12,43 @@ import { replacePlaceholders } from '../../../utils/string'
  * Includes normalization and security filtering.
  * Only recalculates when spec servers change.
  */
-export const useProcessedSpecServers = (specServers: IServer[] | undefined): IServer[] => {
+export const useProcessedSpecServers = (specServers: IServer[] | undefined, withRelativeUrls = false): IServer[] => {
   useRecalculationLogger('useProcessedSpecServers', [specServers])
-
-  if (isEmpty(specServers)) {
-    return []
-  }
 
   return useMemo(() => {
     console.log(`📋 Spec servers: Processing ${specServers!.length} servers`)
-    const absoluteServers = specServers!.filter(server => isAbsoluteURL(server.url))
-    const expandedServers = expandSpecServersWithEnumVariables(absoluteServers)
+
+    if (isEmpty(specServers)) {
+      return []
+    }
+
+    const validServers = filterValidServers(specServers!)
+    const filteredServers = withRelativeUrls ? specServers! : specServers!.filter(server => isAbsoluteURL(server.url))
+    const expandedServers = expandSpecServersWithEnumVariables(filteredServers)
     const processedServers = processServers(expandedServers)
-    const validServers = filterValidServers(processedServers)
+
     console.log(`📋 Spec servers: Result ${validServers.length} servers`)
-    return validServers
-  }, [specServers])
+    return processedServers
+  }, [specServers, withRelativeUrls])
 }
 
 /**
  * Hook for processing custom servers.
- * Includes normalization but no security filtering (custom servers are trusted).
+ * Includes normalization and security filtering.
  * Only recalculates when custom servers change.
  */
 export const useProcessedCustomServers = (customServers: IServer[] | undefined): IServer[] => {
   useRecalculationLogger('useProcessedCustomServers', [customServers])
 
-  if (isEmpty(customServers)) {
-    return []
-  }
-
   return useMemo(() => {
     console.log(`🔧 Custom servers: Processing ${customServers!.length} servers`)
 
-    const processedServers = processServers(customServers!, true)
+    if (isEmpty(customServers)) {
+      return []
+    }
+
+    const validServers = filterValidServers(customServers!)
+    const processedServers = processServers(validServers, true)
 
     console.log(`🔧 Custom servers: Result ${processedServers.length} servers`)
     return processedServers
@@ -83,15 +87,23 @@ export const useCombinedServers = (
 // Helper functions
 
 /**
- * Checks if a URL is absolute (contains protocol or starts with //
+ * Checks if a URL is an absolute HTTP/HTTPS URL.
+ * Only allows secure web protocols suitable for API servers.
+ *
+ * @param url - The URL string to validate
+ * @returns `true` if the URL is an absolute HTTP/HTTPS URL, `false` otherwise
  */
 function isAbsoluteURL(url: string): boolean {
-  return url.indexOf('://') > 0 || url.startsWith('//')
+  const trimmedUrl = url.trim()
+  return /^https?:\/\//i.test(trimmedUrl)
 }
 
 /**
- * Expands servers that have enum variables into multiple server entries
- * Each combination of enum values creates a separate server entry
+ * Expands servers that have enum variables into multiple server entries.
+ * Each combination of enum values creates a separate server entry.
+ *
+ * @param specServers - Array of servers from OpenAPI specification
+ * @returns Array of expanded servers with all enum variable combinations
  */
 function expandSpecServersWithEnumVariables(specServers: IServer[]): IServer[] {
   return specServers?.flatMap(specServer => {
@@ -114,7 +126,7 @@ function expandSpecServersWithEnumVariables(specServers: IServer[]): IServer[] {
  */
 function generateUrlCombinationsFromEnumVariables(
   url: string,
-  variables: Record<string, { enum?: string[]; default?: string }>,
+  variables: Dictionary<INodeVariable, string>,
 ): string[] {
   const enumVariables = Object.entries(variables || {})
     .filter(([_, variable]) => Array.isArray(variable.enum))
@@ -132,16 +144,17 @@ function generateUrlCombinationsFromEnumVariables(
 }
 
 /**
- * Normalizes URLs, adds default descriptions, and sets using proxy endpoint.
+ * Normalizes URLs, adds default descriptions, and sets proxy endpoint usage.
+ *
  * @param servers - Array of servers to process
  * @param isCustom - Whether these are custom servers (default: false)
- * @returns Processed servers ready for display
+ * @returns Processed servers ready for display with normalized URLs and descriptions
  */
 function processServers(servers: IServer[], isCustom = false): IServer[] {
   return servers.map((server) => {
     return {
       ...server,
-      url: isCustom ? removeTrailingSlash(server.url) : getServerUrlWithDefaultValues(server),
+      url: removeTrailingSlash(isCustom ? server.url : getServerUrlWithDefaultValues(server)).toLowerCase(),
       description: server.description || '-',
       custom: isCustom,
       shouldUseProxyEndpoint: server.shouldUseProxyEndpoint || true,
@@ -150,7 +163,10 @@ function processServers(servers: IServer[], isCustom = false): IServer[] {
 }
 
 /**
- * Replaces variable placeholders in server URL with their default values and normalize URL
+ * Replaces variable placeholders in server URL with their default values.
+ *
+ * @param server - Server object containing URL and variable definitions
+ * @returns Normalized URL with default values substituted
  */
 function getServerUrlWithDefaultValues(server: IServer): string {
   const defaultValues = Object.fromEntries(
@@ -161,9 +177,7 @@ function getServerUrlWithDefaultValues(server: IServer): string {
     return server.url
   }
 
-  const urlWithDefaults = replacePlaceholders(server.url, defaultValues)
-
-  return removeTrailingSlash(urlWithDefaults)
+  return replacePlaceholders(server.url, defaultValues)
 }
 
 function removeTrailingSlash(url: string): string {
@@ -172,20 +186,21 @@ function removeTrailingSlash(url: string): string {
 
 /**
  * Filters servers to only include those with valid URLs.
- * This function helps protect against malicious URLs by:
- * - Filtering out null/empty URLs
- * - Using isProperUrl which validates URL format and prevents:
- *   * javascript: protocol injection
- *   * data: URLs with malicious content
- *   * file: URLs
- *   * malformed URLs that could bypass security checks
+ * This function helps protect against malicious URLs by filtering out null/empty URLs
+ * and using isProperUrl which validates URL format and prevents dangerous schemes.
+ *
+ * @param servers - Array of servers to validate
+ * @returns Array of servers with valid URLs only
  */
 function filterValidServers(servers: IServer[]): IServer[] {
   return servers.filter(isValidServer)
 }
 
 /**
- * Type guard to check if a server has a valid URL
+ * Type guard to check if a server has a valid URL.
+ *
+ * @param server - Server object to validate
+ * @returns `true` if server has a non-null, properly formatted URL
  */
 function isValidServer(server: IServer): server is IServer {
   return server.url !== null && isProperUrl(server.url)
