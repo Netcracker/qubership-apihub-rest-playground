@@ -67,21 +67,10 @@ export interface PlaygroundProps {
   origin: string
 }
 
-export const Playground: FC<PlaygroundProps> = ({
-  document = '',
-  mockUrl,
-  onRequestChange,
-  requestBodyIndex,
-  embeddedInMd = false,
-  tryItCredentialsPolicy,
-  corsProxy,
-  customServers,
-  origin,
-}) => {
+export const Playground: FC<PlaygroundProps> = (props) => {
   Playground.displayName = 'Playground'
-  const isDark = useThemeIsDark()
 
-  const httpOperation = useTransformDocumentToNode(document)
+  const httpOperation = useTransformDocumentToNode(props.document)
 
   if (!httpOperation) {
     return (
@@ -93,6 +82,23 @@ export const Playground: FC<PlaygroundProps> = ({
       </Flex>
     )
   }
+
+  return <PlaygroundContent {...props} httpOperation={httpOperation} />
+}
+
+const PlaygroundContent: FC<PlaygroundProps & { httpOperation: any }> = ({
+  httpOperation,
+  mockUrl,
+  onRequestChange,
+  requestBodyIndex,
+  embeddedInMd = false,
+  tryItCredentialsPolicy,
+  corsProxy,
+  customServers,
+  origin,
+}) => {
+  Playground.displayName = 'Playground'
+  const isDark = useThemeIsDark()
 
   const [response, setResponse] = useState<ResponseState | ErrorState | undefined>()
   const [, setRequestData] = useState<HarRequest | undefined>()
@@ -239,8 +245,8 @@ export const Playground: FC<PlaygroundProps> = ({
     }
   }
 
-  const isOnlySendButton =
-    !httpOperation.security?.length && !allParameters.length && !formDataState.isFormDataBody && !mediaTypeContent
+  const isOnlySendButton = !httpOperation.security?.length && !allParameters.length && !formDataState.isFormDataBody
+    && !mediaTypeContent
 
   const tryItPanelContents = (
     <>
@@ -339,7 +345,7 @@ export const Playground: FC<PlaygroundProps> = ({
           gap={1}
           alignItems="center"
         >
-          <ServersDropdown servers={servers} operationPath={httpOperation.path}/>
+          <ServersDropdown servers={servers} operationPath={httpOperation.path} />
           <ButtonWithHint
             title="Send"
             hint={!chosenServer ? 'Please add a server' : ''}
