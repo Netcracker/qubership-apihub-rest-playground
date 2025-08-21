@@ -1,5 +1,6 @@
 import { Box, ThemeProvider } from '@mui/material'
 import { Box as BoxMosaic, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
+import { IHttpOperation } from '@stoplight/types'
 import { Request as HarRequest } from 'har-format'
 import { useAtom } from 'jotai'
 import { FC, useEffect, useState } from 'react'
@@ -86,7 +87,7 @@ export const Playground: FC<PlaygroundProps> = (props) => {
   return <PlaygroundContent {...props} httpOperation={httpOperation} />
 }
 
-const PlaygroundContent: FC<PlaygroundProps & { httpOperation: any }> = ({
+const PlaygroundContent: FC<PlaygroundProps & { httpOperation: IHttpOperation }> = ({
   httpOperation,
   mockUrl,
   onRequestChange,
@@ -140,7 +141,7 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: any }> = ({
       .reduce((previousValue, currentValue) => {
         previousValue[currentValue] = bodyParameterValues[currentValue]
         return previousValue
-      }, {})
+      }, {} as typeof bodyParameterValues)
 
   useEffect(() => {
     console.log('First server:', firstServer)
@@ -224,8 +225,8 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: any }> = ({
       let response: Response | undefined
       try {
         response = await fetch(...request)
-      } catch (e: any) {
-        setResponse({ error: new NetworkError(e.message) })
+      } catch (e) {
+        setResponse({ error: new NetworkError(e instanceof Error ? e.message : String(e)) })
       }
       if (response) {
         const contentType = response.headers.get('Content-Type')
@@ -238,8 +239,8 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: any }> = ({
           contentType,
         })
       }
-    } catch (e: any) {
-      setResponse({ error: e })
+    } catch (e) {
+      setResponse({ error: e instanceof Error ? e : new Error(String(e)) })
     } finally {
       setLoading(false)
     }
@@ -306,7 +307,10 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: any }> = ({
     tryItPanelElem = (
       <Panel isCollapsible={false} p={0} className="TryItPanel">
         <Panel.Titlebar bg="canvas-300" className="Titlebar">
-          <BoxMosaic fontWeight="bold" color={!isDark ? HttpMethodColors[httpOperation.method] : undefined}>
+          <BoxMosaic
+            fontWeight="bold"
+            color={!isDark ? HttpMethodColors[httpOperation.method as keyof typeof HttpMethodColors] : undefined}
+          >
             {httpOperation.method.toUpperCase()}
           </BoxMosaic>
           <BoxMosaic fontWeight="medium" ml={2} textOverflow="truncate" overflowX="hidden">
