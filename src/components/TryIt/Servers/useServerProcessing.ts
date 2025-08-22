@@ -157,7 +157,7 @@ function processServers(servers: IServer[], isCustom = false): IServer[] {
       url: removeTrailingSlash(isCustom ? server.url : getServerUrlWithDefaultValues(server)).toLowerCase(),
       description: server.description || '-',
       custom: isCustom,
-      shouldUseProxyEndpoint: server.shouldUseProxyEndpoint || true,
+      shouldUseProxyEndpoint: isCustom ? server.shouldUseProxyEndpoint : true,
     }
   })
 }
