@@ -16,11 +16,11 @@ export const useProcessedSpecServers = (specServers: IServer[] | undefined, with
   useRecalculationLogger('useProcessedSpecServers', [specServers])
 
   return useMemo(() => {
-    console.log(`📋 Spec servers: Processing ${specServers!.length} servers`)
 
     if (isEmpty(specServers)) {
       return []
     }
+    console.log(`📋 Spec servers: Processing ${specServers!.length} servers`)
 
     const validServers = filterValidServers(specServers!)
     const filteredServers = withRelativeUrls ? specServers! : specServers!.filter(server => isAbsoluteURL(server.url))
@@ -41,11 +41,11 @@ export const useProcessedCustomServers = (customServers: IServer[] | undefined):
   useRecalculationLogger('useProcessedCustomServers', [customServers])
 
   return useMemo(() => {
-    console.log(`🔧 Custom servers: Processing ${customServers!.length} servers`)
 
     if (isEmpty(customServers)) {
       return []
     }
+    console.log(`🔧 Custom servers: Processing ${customServers!.length} servers`)
 
     const validServers = filterValidServers(customServers!)
     const processedServers = processServers(validServers, true)
