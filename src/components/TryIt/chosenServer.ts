@@ -1,6 +1,5 @@
 import { atom } from 'jotai'
 
-import type { IServer } from '../../utils/http-spec/IServer'
+import { persistAtom } from '../../utils/jotai/persistAtom'
 
-// track null separately from undefined so that we can tell if the server has been set (undefined indicates it has not been "processed" yet)
-export const chosenServerAtom = atom<IServer | null | undefined>(undefined)
+export const chosenServerUrlAtom = persistAtom<string | undefined>('playground-chosen-sever-url', atom<string | undefined>(undefined))

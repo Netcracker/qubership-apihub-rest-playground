@@ -2,7 +2,6 @@ import { Box, ThemeProvider } from '@mui/material'
 import { Box as BoxMosaic, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/mosaic'
 import { IHttpOperation } from '@stoplight/types'
 import { Request as HarRequest } from 'har-format'
-import { useAtom } from 'jotai'
 import { FC, useEffect, useState } from 'react'
 
 import { HttpMethodColors } from '../../constants'
@@ -12,7 +11,6 @@ import { theme } from '../../themes/theme'
 import { IServer } from '../../utils/http-spec/IServer'
 import { ButtonWithHint } from '../ButtonWithHint'
 import { NonIdealState } from '../NonIdealState'
-import { chosenServerAtom } from '.'
 import { TryItAuth } from './Auth/Auth'
 import { usePersistedSecuritySchemeWithValues } from './Auth/authentication-utils'
 import { FormDataBody } from './Body/FormDataBody'
@@ -33,6 +31,7 @@ import {
 } from './Response/Response'
 import { ServersDropdown } from './Servers/ServersDropdown'
 import { useCombinedServers, useProcessedCustomServers, useProcessedSpecServers } from './Servers/useServerProcessing'
+import { useServerSelection } from './Servers/useServerSelection'
 
 export interface PlaygroundProps {
   document: string
@@ -127,8 +126,7 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: IHttpOperation }>
   const processedCustomServers = useProcessedCustomServers(customServers)
   const servers = useCombinedServers(processedSpecServers, processedCustomServers, mockUrl)
 
-  const firstServer = servers[0] || null
-  const [chosenServer, setChosenServer] = useAtom(chosenServerAtom)
+  const { chosenServer } = useServerSelection(servers)
   const isMockingEnabled = mockUrl && chosenServer?.url === mockUrl
 
   const hasRequiredButEmptyParameters = allParameters.some(
@@ -142,20 +140,6 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: IHttpOperation }>
         previousValue[currentValue] = bodyParameterValues[currentValue]
         return previousValue
       }, {} as typeof bodyParameterValues)
-
-  useEffect(() => {
-    console.log('First server:', firstServer)
-    console.log('Current chosen server:', chosenServer)
-    const currentUrl = chosenServer?.url
-
-    // simple attempt to preserve / sync up active server if the URLs are the same between re-renders / navigation
-    const exists = currentUrl && servers.find(s => s.url === currentUrl)
-    if (!exists) {
-      setChosenServer(firstServer)
-    } else if (exists && exists.url !== chosenServer.url) {
-      setChosenServer(exists)
-    }
-  }, [servers, firstServer, chosenServer, setChosenServer])
 
   useEffect(() => {
     let isMounted = true

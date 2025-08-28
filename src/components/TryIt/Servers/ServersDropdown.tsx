@@ -2,7 +2,6 @@ import AddIcon from '@mui/icons-material/Add'
 import { Box, Button, MenuItem } from '@mui/material'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-import { useAtom } from 'jotai'
 import React, { useCallback, useState } from 'react'
 
 import { DeleteIcon } from '../../../icons/DeleteIcon'
@@ -10,9 +9,9 @@ import { COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY } from '../../../themes/colors
 import type { IServer } from '../../../utils/http-spec/IServer'
 import { ButtonWithHint } from '../../ButtonWithHint'
 import { createCustomServer, deleteCustomServer } from '../../events'
-import { chosenServerAtom } from '../chosenServer'
 import { MenuItemContent } from '../MenuItemContent'
 import { OverflowTooltip } from '../OverflowTooltip'
+import { useServerSelection } from './useServerSelection'
 
 const MENU_ITEM_MAX_WIDTH = 400
 
@@ -42,18 +41,15 @@ export type ServersDropdownProps = {
 }
 
 export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps) => {
-  const [chosenServer, setChosenServer] = useAtom(chosenServerAtom)
-
-  const defaultValue = servers[0]?.url ?? ''
-
+  const { chosenServer, selectServer } = useServerSelection(servers)
   const [open, setOpen] = useState(false)
 
   const handleServerChange = useCallback(
     (event) => {
       const server = servers.find(server => server.url === event.target.value)
-      setChosenServer(server)
+      selectServer(server || null)
     },
-    [servers, setChosenServer],
+    [servers, selectServer],
   )
 
   const handleServerAdd = useCallback(() => {
@@ -84,7 +80,6 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         onOpen={handleOpen}
         onChange={handleServerChange}
         value={chosenServer?.url ?? ''}
-        defaultValue={defaultValue}
         renderValue={(p) => (
           <OverflowTooltip title={p + operationPath}>
             <Box sx={STYLE_SELECT_VALUE}>
@@ -99,13 +94,13 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         aria-label="Server"
         data-testid="ServerSelect"
       >
-        {servers.map((server, index) => {
+        {servers.map((server) => {
           const { url, description, custom } = server
           return (
             <MenuItem
               key={server.url}
               value={server.url}
-              selected={index === servers.indexOf(chosenServer!)}
+              selected={server.url === chosenServer?.url}
               sx={STYLE_MENU_ITEM}
             >
               <MenuItemContent title={url} subtitle={description} maxWidth={MENU_ITEM_MAX_WIDTH} />
