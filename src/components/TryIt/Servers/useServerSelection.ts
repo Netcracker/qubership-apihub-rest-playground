@@ -28,25 +28,37 @@ export const useServerSelection = (availableServers: IServer[]) => {
     const hasValidSelection = chosenServerUrl && chosenServer
     const hasFallbackAvailable = fallbackServer?.url
 
-    // Apply fallback when:
-    // 1. No server is currently selected, OR
-    // 2. Selected server is no longer available in the list
-    if (!hasValidSelection && hasFallbackAvailable) {
+    console.log('🔄 useServerSelection fallback check:', {
+      chosenServerUrl,
+      chosenServer: chosenServer?.url,
+      hasValidSelection,
+      hasFallbackAvailable,
+      fallbackServerUrl: fallbackServer?.url,
+      availableServersCount: availableServers.length,
+    })
+
+    // Apply fallback ONLY when:
+    // 1. No server URL is currently selected (empty string or null)
+    // 2. AND there's a fallback available
+    if (!chosenServerUrl && hasFallbackAvailable) {
+      console.log('🔄 Applying fallback to:', fallbackServer.url)
       setChosenServerUrl(fallbackServer.url)
+      return
     }
 
     // Clear selection if no servers are available
     if (!hasFallbackAvailable && chosenServerUrl) {
+      console.log('🔄 Clearing selection - no servers available')
       setChosenServerUrl('')
     }
-  }, [chosenServerUrl, chosenServer, fallbackServer, setChosenServerUrl])
+  }, [chosenServerUrl, chosenServer, fallbackServer, setChosenServerUrl, availableServers.length])
 
   /**
-   * Manually select a server from the available list
-   * @param server - Server to select, or null to clear selection
+   * Manually select a server by URL
+   * @param url - Server URL to select, or empty string to clear selection
    */
-  const selectServer = (server: IServer | null) => {
-    setChosenServerUrl(server?.url || '')
+  const selectServer = (url: string) => {
+    setChosenServerUrl(url)
   }
 
   return {

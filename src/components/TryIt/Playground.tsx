@@ -3,6 +3,7 @@ import { Box as BoxMosaic, Flex, Icon, Panel, useThemeIsDark } from '@stoplight/
 import { IHttpOperation } from '@stoplight/types'
 import { Request as HarRequest } from 'har-format'
 import { FC, useEffect, useState } from 'react'
+import { useEvent } from 'react-use'
 
 import { HttpMethodColors } from '../../constants'
 import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
@@ -10,6 +11,7 @@ import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNo
 import { theme } from '../../themes/theme'
 import { IServer } from '../../utils/http-spec/IServer'
 import { ButtonWithHint } from '../ButtonWithHint'
+import { SELECT_CUSTOM_SERVER_EVENT } from '../events'
 import { NonIdealState } from '../NonIdealState'
 import { TryItAuth } from './Auth/Auth'
 import { usePersistedSecuritySchemeWithValues } from './Auth/authentication-utils'
@@ -126,8 +128,14 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: IHttpOperation }>
   const processedCustomServers = useProcessedCustomServers(customServers)
   const servers = useCombinedServers(processedSpecServers, processedCustomServers, mockUrl)
 
-  const { chosenServer } = useServerSelection(servers)
+  const { chosenServer, selectServer } = useServerSelection(servers)
   const isMockingEnabled = mockUrl && chosenServer?.url === mockUrl
+
+  // Handle selectCustomServer event from UI
+  useEvent(SELECT_CUSTOM_SERVER_EVENT, (event: CustomEvent<{ url: string }>) => {
+    console.log('SelectServerEvent received in Playground:', event.detail.url)
+    selectServer(event.detail.url)
+  })
 
   const hasRequiredButEmptyParameters = allParameters.some(
     parameter => parameter.required && !parameterValuesWithDefaults[parameter.name],

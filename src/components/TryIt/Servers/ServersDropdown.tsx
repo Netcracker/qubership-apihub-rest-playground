@@ -46,10 +46,9 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
 
   const handleServerChange = useCallback(
     (event) => {
-      const server = servers.find(server => server.url === event.target.value)
-      selectServer(server || null)
+      selectServer(event.target.value || '')
     },
-    [servers, selectServer],
+    [selectServer],
   )
 
   const handleServerAdd = useCallback(() => {
