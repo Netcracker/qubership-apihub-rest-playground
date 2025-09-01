@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 
 import type { IServer } from '../../../utils/http-spec/IServer'
 import { chosenServerUrlAtom } from '../chosenServer'
@@ -18,53 +18,71 @@ import { chosenServerUrlAtom } from '../chosenServer'
 export const useServerSelection = (availableServers: IServer[]) => {
   const [chosenServerUrl, setChosenServerUrl] = useAtom(chosenServerUrlAtom)
 
-  const fallbackServer = availableServers[0] ?? null
+  // Memoize expensive calculations
+  const fallbackServer = useMemo(() => availableServers[0] ?? null, [availableServers])
+  
+  const chosenServer = useMemo(() => 
+    availableServers.find(server => server.url === chosenServerUrl) ?? null,
+    [availableServers, chosenServerUrl],
+  )
 
-  // Find the currently selected server object based on the stored URL
-  const chosenServer = availableServers.find(server => server.url === chosenServerUrl) ?? null
-
-  // Automatic fallback logic when selection becomes invalid
-  useEffect(() => {
-    const hasValidSelection = chosenServerUrl && chosenServer
-    const hasFallbackAvailable = fallbackServer?.url
-
-    console.log('🔄 useServerSelection fallback check:', {
-      chosenServerUrl,
-      chosenServer: chosenServer?.url,
+  // Memoize validation states to prevent unnecessary re-calculations
+  const validationState = useMemo(() => {
+    const hasValidSelection = Boolean(chosenServerUrl && chosenServer)
+    const hasFallbackAvailable = Boolean(fallbackServer?.url)
+    
+    return {
       hasValidSelection,
       hasFallbackAvailable,
-      fallbackServerUrl: fallbackServer?.url,
-      availableServersCount: availableServers.length,
-    })
+      shouldApplyFallback: !hasValidSelection && hasFallbackAvailable,
+      shouldClearSelection: !hasFallbackAvailable && Boolean(chosenServerUrl),
+    }
+  }, [chosenServerUrl, chosenServer, fallbackServer])
 
-    // Apply fallback when:
-    // 1. No server is currently selected, OR
-    // 2. Selected server is no longer available in the list
-    if (!hasValidSelection && hasFallbackAvailable) {
-      console.log('🔄 Applying fallback to:', fallbackServer.url)
-      setChosenServerUrl(fallbackServer.url)
+  // Optimized fallback logic with reduced re-renders
+  useEffect(() => {
+    const { hasValidSelection, hasFallbackAvailable, shouldApplyFallback, shouldClearSelection } = validationState
+
+    // Only log when necessary (not on every render)
+    if (shouldApplyFallback || shouldClearSelection) {
+      console.log('🔄 useServerSelection fallback check:', {
+        chosenServerUrl,
+        chosenServer: chosenServer?.url,
+        hasValidSelection,
+        hasFallbackAvailable,
+        fallbackServerUrl: fallbackServer?.url,
+        availableServersCount: availableServers.length,
+        action: shouldApplyFallback ? 'applying-fallback' : 'clearing-selection',
+      })
+    }
+
+    if (shouldApplyFallback) {
+      console.log('🔄 Applying fallback to:', fallbackServer!.url)
+      setChosenServerUrl(fallbackServer!.url)
       return
     }
 
-    // Clear selection if no servers are available
-    if (!hasFallbackAvailable && chosenServerUrl) {
+    if (shouldClearSelection) {
       console.log('🔄 Clearing selection - no servers available')
       setChosenServerUrl('')
     }
-  }, [chosenServerUrl, chosenServer, fallbackServer, setChosenServerUrl, availableServers.length])
+  }, [validationState, chosenServerUrl, chosenServer, fallbackServer, setChosenServerUrl, availableServers.length])
 
   /**
    * Manually select a server by URL
    * @param url - Server URL to select, or empty string to clear selection
    */
-  const selectServer = (url: string) => {
-    console.log('🎯 selectServer called with:', {
-      url,
-      previousUrl: chosenServerUrl,
-      serverExists: availableServers.some(s => s.url === url),
-    })
-    setChosenServerUrl(url)
-  }
+  const selectServer = useCallback((url: string) => {
+    // Only log and update if the URL actually changed
+    if (url !== chosenServerUrl) {
+      console.log('🎯 selectServer called with:', {
+        url,
+        previousUrl: chosenServerUrl,
+        serverExists: availableServers.some(s => s.url === url),
+      })
+      setChosenServerUrl(url)
+    }
+  }, [chosenServerUrl, availableServers, setChosenServerUrl])
 
   return {
     chosenServer,

@@ -18,9 +18,9 @@ export const deleteCustomServer = (server: { url: string }) =>
     bubbles: true,
   })
 
-export const SELECT_CUSTOM_SERVER_EVENT = 'selectCustomServer'
+export const SELECT_CREATED_CUSTOM_SERVER = 'select-created-custom-server'
 export const selectCustomServer = (server: { url: string }) =>
-  new CustomEvent(SELECT_CUSTOM_SERVER_EVENT, {
+  new CustomEvent(SELECT_CREATED_CUSTOM_SERVER, {
     detail: server,
     composed: true,
     bubbles: true,
