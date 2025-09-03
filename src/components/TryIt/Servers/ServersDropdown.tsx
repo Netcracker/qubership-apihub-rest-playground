@@ -26,11 +26,17 @@ const STYLE_SELECT_VALUE = {
 
 const STYLE_MENU_ITEM = {
   display: 'flex',
+  gap: 2,
   alignItems: 'center',
   justifyContent: 'space-between',
   '&:hover .MuiButtonBase-root': {
     visibility: 'visible',
   },
+}
+
+const STYLE_DELETE_BUTTON = {
+  visibility: 'hidden',
+  p: 0,
 }
 
 const selectInputProps = { sx: { py: '1px' } } // align input and button height
@@ -106,7 +112,7 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
 
               <ButtonWithHint
                 startIcon={<DeleteIcon fontSize="small" />}
-                sx={{ visibility: 'hidden' }}
+                sx={STYLE_DELETE_BUTTON}
                 onClick={handleServerDelete(server)}
                 disabled={!custom}
                 hint={!custom ? 'Server from API specification cannot be deleted' : undefined}
