@@ -2,8 +2,7 @@ import { LoadingButton } from '@mui/lab'
 import { Box, Button, IconButton } from '@mui/material'
 import type { ButtonProps } from '@mui/material/Button/Button'
 import Tooltip from '@mui/material/Tooltip'
-import type { FC, ReactElement, ReactNode } from 'react'
-import { memo, useMemo } from 'react'
+import React, { FC, memo, ReactElement, ReactNode, useCallback, useMemo } from 'react'
 
 export type ButtonWithHintProps = {
   hint?: string | ReactNode
@@ -56,6 +55,13 @@ export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>
     )
   }, [isLoading, title, startIcon, buttonProps])
 
+  const handleClick = useCallback((event: React.MouseEvent) => {
+    if (buttonProps.disabled) {
+      event.stopPropagation()
+      event.preventDefault()
+    }
+  }, [buttonProps.disabled])
+
   return (
     <Tooltip
       title={hint}
@@ -63,8 +69,12 @@ export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>
         sx: { '.MuiTooltip-tooltip': { maxWidth: hintMaxWidth } },
       }}
     >
-      {/* MUI disables mouse events for disabled elements. `display: 'inline'` resolves this with minimal layout impact. */}
-      <Box display="inline">
+      {
+        // MUI disables mouse events for disabled elements.
+        // `display: 'inline'` enables tooltips with minimal layout impact.
+        // `handleClick` prevents click-through
+      }
+      <Box display="inline" onClick={handleClick}>
         {button}
       </Box>
     </Tooltip>
