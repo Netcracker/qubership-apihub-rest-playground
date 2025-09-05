@@ -154,7 +154,7 @@ function processServers(servers: IServer[], isCustom = false): IServer[] {
   return servers.map((server) => {
     return {
       ...server,
-      url: removeTrailingSlash(isCustom ? server.url : getServerUrlWithDefaultValues(server)).toLowerCase(),
+      url: isCustom ? server.url : getServerUrlWithDefaultValues(server),
       description: server.description || '-',
       custom: isCustom,
       shouldUseProxyEndpoint: isCustom ? server.shouldUseProxyEndpoint : true,
@@ -178,10 +178,6 @@ function getServerUrlWithDefaultValues(server: IServer): string {
   }
 
   return replacePlaceholders(server.url, defaultValues)
-}
-
-function removeTrailingSlash(url: string): string {
-  return url.replace(/\/$/, '')
 }
 
 /**
