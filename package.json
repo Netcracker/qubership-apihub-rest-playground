@@ -13,8 +13,8 @@
     "./index.css": "./dist/styles.min.css",
     ".": "./dist/index.js",
     "./utils": {
-      "default": "./dist/utils.js",
-      "types": "./dist/src/utils-export/index.d.ts"
+      "types": "./dist/src/utils-export/index.d.ts",
+      "default": "./dist/utils.js"
     }
   },
   "typesVersions": {
@@ -32,9 +32,9 @@
     "build.webcomponents": "webpack -c webpack.web-components.config.js",
     "build.utils": "webpack -c ./webpack.utils.config.js",
     "build.styles": "postcss src/styles.css -o dist/styles.min.css",
-    "build:showcase": "build-storybook -o ./dist-showcase --disable-telemetry",
+    "build:showcase": "storybook build -o ./dist-showcase",
     "lint": "eslint . --ext .ts,.tsx,.json,.jsonc --ignore-path .gitignore --max-warnings 0 --report-unused-disable-directives",
-    "storybook": "start-storybook -p 9001",
+    "storybook": "storybook dev -p 9001",
     "development:link": "echo please run \"npm link\" manually in console to avoid using the deprecated node_modules/.bin/npm as it will reinstall all dependencies",
     "development:unlink": "echo please run \"npm unlink\" manually in console to avoid using the deprecated node_modules/.bin/npm as it will reinstall all dependencies",
     "update-lock-file": "update-lock-file @netcracker"
@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@monaco-editor/react": "4.7.0",
+    "caniuse-lite": "^1.0.30001741",
     "monaco-editor": "0.52.2"
   },
   "devDependencies": {
@@ -75,15 +76,15 @@
     "@stoplight/scripts": "10.0.0",
     "@stoplight/types": "^13.0.0",
     "@stoplight/yaml": "^4.2.3",
-    "@storybook/addon-controls": "6.5.12",
-    "@storybook/addon-docs": "6.5.12",
+    "@storybook/addon-controls": "9.0.8",
+    "@storybook/addon-docs": "9.1.5",
     "@storybook/addon-postcss": "2.0.0",
-    "@storybook/addon-toolbars": "6.5.12",
-    "@storybook/addon-viewport": "6.5.12",
-    "@storybook/builder-webpack5": "6.5.12",
-    "@storybook/manager-webpack5": "6.5.12",
-    "@storybook/react": "6.5.12",
-    "@storybook/theming": "6.5.12",
+    "@storybook/addon-toolbars": "9.0.8",
+    "@storybook/addon-viewport": "9.0.8",
+    "@storybook/builder-webpack5": "9.1.5",
+    "@storybook/manager-webpack5": "6.5.16",
+    "@storybook/react": "9.1.5",
+    "@storybook/react-webpack5": "9.1.5",
     "@types/classnames": "^2.2.10",
     "@types/enzyme": "3.x.x",
     "@types/har-format": "^1.2.5",
@@ -135,6 +136,7 @@
     "react-router-hash-link": "^2.1.0",
     "react-test-renderer": "^17.0.2",
     "react-use": "17.6.0",
+    "storybook": "9.1.5",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.5.4",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
