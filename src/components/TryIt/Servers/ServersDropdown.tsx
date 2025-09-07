@@ -130,7 +130,7 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
           aria-label="Add Server"
           data-testid="AddCustomServerButton"
         >
-          Add Custom Server
+          Add Custom Server (build)
         </Button>
       </Select>
     </FormControl>

@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "src/utils-export/index.ts",
+    "src/components/TryIt/Servers/useServerProcessing.ts",
+    "src/hooks/usePerformanceLogger.ts",
+    "src/utils/http-spec/IServer.ts",
+    "src/utils/string.ts"
+  ],
+  "compilerOptions": {
+    "outDir": "./dist",
+    "declarationDir": "./dist",
+    "declaration": true,
+    "types": ["react"]
+  }
+}

@@ -3,7 +3,6 @@ import { isEmpty } from 'lodash'
 import { useMemo } from 'react'
 
 import { useRecalculationLogger } from '../../../hooks/usePerformanceLogger'
-import { isProperUrl } from '../../../utils/guards'
 import { IServer } from '../../../utils/http-spec/IServer'
 import { replacePlaceholders } from '../../../utils/string'
 
@@ -16,7 +15,6 @@ export const useProcessedSpecServers = (specServers: IServer[] | undefined, with
   useRecalculationLogger('useProcessedSpecServers', [specServers])
 
   return useMemo(() => {
-
     if (isEmpty(specServers)) {
       return []
     }
@@ -41,7 +39,6 @@ export const useProcessedCustomServers = (customServers: IServer[] | undefined):
   useRecalculationLogger('useProcessedCustomServers', [customServers])
 
   return useMemo(() => {
-
     if (isEmpty(customServers)) {
       return []
     }
@@ -200,4 +197,45 @@ function filterValidServers(servers: IServer[]): IServer[] {
  */
 function isValidServer(server: IServer): server is IServer {
   return server.url !== null && isProperUrl(server.url)
+}
+
+function isProperUrl(url: string): boolean {
+  if (!url) {
+    return false
+  }
+
+  // Block dangerous schemes (XSS and file access prevention)
+  const dangerousSchemes = /^(javascript|data|vbscript|file):/i
+  if (dangerousSchemes.test(url)) {
+    return false
+  }
+
+  // Fast path: relative URLs (most common in OpenAPI)
+  // Covers: /path, ../path, path, ?query, #fragment
+  if (!url.includes('://') && !url.startsWith('//')) {
+    // Allow any relative path, query, or fragment
+    return /^[^<>"|\\^`{}\s]*$/.test(url)
+  }
+
+  // Protocol-relative URLs: //example.com
+  if (url.startsWith('//')) {
+    try {
+      // Validate by prepending https: and using URL constructor
+      new URL('https:' + url)
+      return true
+    } catch {
+      return false
+    }
+  }
+
+  // Absolute URLs: validate using URL constructor
+  try {
+    const parsedUrl = new URL(url)
+
+    // Only allow web-safe protocols for absolute URLs
+    const allowedProtocols = ['http:', 'https:', 'ws:', 'wss:']
+    return allowedProtocols.includes(parsedUrl.protocol)
+  } catch {
+    return false
+  }
 }
