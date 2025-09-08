@@ -4,14 +4,14 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import React, { useCallback, useState } from 'react'
 
-import { DeleteIcon } from '../../../icons/DeleteIcon'
-import { COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY } from '../../../themes/colors'
-import type { IServer } from '../../../utils/http-spec/IServer'
-import { ButtonWithHint } from '../../ButtonWithHint'
-import { createCustomServer, deleteCustomServer } from '../../events'
+import { useServerSelection } from '../../hooks/useServerSelection'
+import { DeleteIcon } from '../../icons/DeleteIcon'
+import { COLOR_TEXT_PRIMARY, COLOR_TEXT_SECONDARY } from '../../themes/colors'
+import type { IServer } from '../../utils/http-spec/IServer'
+import { ButtonWithHint } from '../ButtonWithHint'
+import { createCustomServer, deleteCustomServer } from '../events'
 import { MenuItemContent } from '../MenuItemContent'
 import { OverflowTooltip } from '../OverflowTooltip'
-import { useServerSelection } from './useServerSelection'
 
 const MENU_ITEM_MAX_WIDTH = 400
 
@@ -130,7 +130,7 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
           aria-label="Add Server"
           data-testid="AddCustomServerButton"
         >
-          Add Custom Server (build)
+          Add Custom Server
         </Button>
       </Select>
     </FormControl>

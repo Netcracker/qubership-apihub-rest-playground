@@ -59,10 +59,6 @@ const getServerUrl = ({
 >) => {
   const serverUrl = mockData?.url || chosenServer?.url;
 
-  if (!serverUrl) {
-    throw new Error("No server URL provided");
-  }
-
   if (corsProxy && !mockData) {
     return `${corsProxy}${serverUrl}`;
   }

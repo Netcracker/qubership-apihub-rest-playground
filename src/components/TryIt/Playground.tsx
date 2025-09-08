@@ -31,9 +31,9 @@ import {
   ResponseState,
   TryItResponse,
 } from './Response/Response'
-import { ServersDropdown } from './Servers/ServersDropdown'
-import { useCombinedServers, useProcessedCustomServers, useProcessedSpecServers } from './Servers/useServerProcessing'
-import { useServerSelection } from './Servers/useServerSelection'
+import { ServersDropdown } from './ServersDropdown'
+import { useCombinedServers, useProcessedCustomServers, useProcessedSpecServers } from '../../hooks/useServerProcessing'
+import { useServerSelection } from '../../hooks/useServerSelection'
 
 export interface PlaygroundProps {
   document: string

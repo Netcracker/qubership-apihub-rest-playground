@@ -3,7 +3,7 @@
  * that can be reused in other components and applications.
  */
 
-export { useProcessedCustomServers, useProcessedSpecServers } from '../components/TryIt/Servers/useServerProcessing'
+export { useProcessedCustomServers, useProcessedSpecServers } from '../hooks/useServerProcessing'
 export { useTransformDocumentToNode } from '../hooks/useTransformDocumentToNode'
 
 // Export types that might be useful for consumers

@@ -1,8 +1,13 @@
-import { useAtom } from 'jotai'
+import { atom, useAtom } from 'jotai'
 import { useCallback, useEffect, useMemo } from 'react'
 
-import type { IServer } from '../../../utils/http-spec/IServer'
-import { chosenServerUrlAtom } from '../chosenServer'
+import type { IServer } from '../utils/http-spec/IServer'
+import { persistAtom } from '../utils/jotai/persistAtom'
+
+const chosenServerUrlAtom = persistAtom<string | undefined>(
+  'playground-chosen-sever-url',
+  atom<string | undefined>(undefined),
+)
 
 /**
  * Custom hook for managing server selection state with automatic fallback logic.
@@ -20,17 +25,17 @@ export const useServerSelection = (availableServers: IServer[]) => {
 
   // Memoize expensive calculations
   const fallbackServer = useMemo(() => availableServers[0] ?? null, [availableServers])
-  
-  const chosenServer = useMemo(() => 
-    availableServers.find(server => server.url === chosenServerUrl) ?? null,
-    [availableServers, chosenServerUrl],
-  )
+
+  const chosenServer = useMemo(() => availableServers.find(server => server.url === chosenServerUrl) ?? null, [
+    availableServers,
+    chosenServerUrl,
+  ])
 
   // Memoize validation states to prevent unnecessary re-calculations
   const validationState = useMemo(() => {
     const hasValidSelection = Boolean(chosenServerUrl && chosenServer)
     const hasFallbackAvailable = Boolean(fallbackServer?.url)
-    
+
     return {
       hasValidSelection,
       hasFallbackAvailable,

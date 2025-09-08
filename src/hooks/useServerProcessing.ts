@@ -2,9 +2,9 @@ import { Dictionary, INodeVariable } from '@stoplight/types'
 import { isEmpty } from 'lodash'
 import { useMemo } from 'react'
 
-import { useRecalculationLogger } from '../../../hooks/usePerformanceLogger'
-import { IServer } from '../../../utils/http-spec/IServer'
-import { replacePlaceholders } from '../../../utils/string'
+import { useRecalculationLogger } from './usePerformanceLogger'
+import { IServer } from '../utils/http-spec/IServer'
+import { replacePlaceholders } from '../utils/string'
 
 /**
  * Hook for processing servers from OpenAPI specification.
