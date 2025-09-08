@@ -1,16 +1,16 @@
-'use strict'
-const { ProvidePlugin } = require('webpack')
+import { ProvidePlugin } from 'webpack'
+import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-
-module.exports = {
+const config = {
   framework: {
     name: '@storybook/react-webpack5',
     options: {},
   },
+
   core: {
     disableTelemetry: true,
   },
+
   typescript: {
     check: false,
     reactDocgen: 'react-docgen-typescript',
@@ -19,19 +19,27 @@ module.exports = {
       propFilter: (prop) => (prop.parent ? !/node_modules/.test(prop.parent.fileName) : true),
     },
   },
-  stories: ['../src/**/*.stories.{js,jsx,ts,tsx}'],
-  addons: ['@storybook/addon-docs', {
-    name: '@storybook/addon-postcss',
-    options: {
-      postcssLoaderOptions: { implementation: require('postcss') },
-    },
-  }],
 
-  webpackFinal: config => {
+  stories: ['../src/**/*.stories.@(js|jsx|ts|tsx|mdx)'],
+
+  addons: [
+    '@storybook/addon-docs',
+    {
+      name: '@storybook/addon-postcss',
+      options: {
+        postcssLoaderOptions: { implementation: require('postcss') },
+      },
+    },
+  ],
+
+  webpackFinal: (config) => {
+    // Add TypeScript path resolution
     config.resolve.plugins = config.resolve.plugins || []
     config.resolve.plugins.push(new TsconfigPathsPlugin())
 
+    // Add necessary fallbacks for Node.js modules in browser
     config.resolve.fallback = {
+      ...config.resolve.fallback,
       stream: false,
       path: false,
       process: false,
@@ -46,13 +54,19 @@ module.exports = {
       }),
     )
 
-    // Add our comprehensive TypeScript and JavaScript handling
+    // Override existing rules to ensure proper TypeScript and JSX handling
+    config.module.rules = config.module.rules.filter(
+      rule => !(rule.test && rule.test.toString().includes('tsx?')),
+    )
+
+    // Add comprehensive TypeScript and JavaScript handling
     config.module.rules.unshift(
       {
         test: /\.(ts|tsx)$/,
+        exclude: /node_modules/,
         use: [
           {
-            loader: require.resolve('babel-loader'),
+            loader: 'babel-loader',
             options: {
               presets: [
                 ['@babel/preset-env', {
@@ -65,13 +79,13 @@ module.exports = {
             },
           },
         ],
-        exclude: /node_modules/,
       },
       {
         test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
         use: [
           {
-            loader: require.resolve('babel-loader'),
+            loader: 'babel-loader',
             options: {
               presets: [
                 ['@babel/preset-env', {
@@ -83,20 +97,25 @@ module.exports = {
             },
           },
         ],
-        exclude: /node_modules/,
-      },
-      {
-        test: /\.m?js/,
-        resolve: {
-          fullySpecified: false,
-        },
-      },
-      {
-        test: /\.ya?ml$/,
-        type: 'asset/source',
       },
     )
+
+    // Handle YAML files
+    config.module.rules.push({
+      test: /\.ya?ml$/,
+      type: 'asset/source',
+    })
+
+    // Handle ES modules
+    config.module.rules.push({
+      test: /\.m?js/,
+      resolve: {
+        fullySpecified: false,
+      },
+    })
 
     return config
   },
 }
+
+export default config
