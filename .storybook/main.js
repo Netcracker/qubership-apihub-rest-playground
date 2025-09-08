@@ -8,6 +8,9 @@ module.exports = {
     name: '@storybook/react-webpack5',
     options: {},
   },
+  core: {
+    disableTelemetry: true,
+  },
   typescript: {
     check: false,
     reactDocgen: 'react-docgen-typescript',
@@ -23,21 +26,7 @@ module.exports = {
       postcssLoaderOptions: { implementation: require('postcss') },
     },
   }],
-  babel: async () => {
-    return {
-      presets: [
-        '@babel/preset-react',
-        '@babel/preset-typescript',
-        [
-          '@babel/preset-env',
-          {
-            targets: 'last 2 Chrome versions, last 2 Firefox versions, last 1 Safari version',
-            modules: 'commonjs',
-          },
-        ],
-      ],
-    }
-  },
+
   webpackFinal: config => {
     config.resolve.plugins = config.resolve.plugins || []
     config.resolve.plugins.push(new TsconfigPathsPlugin())
@@ -46,7 +35,7 @@ module.exports = {
       stream: false,
       path: false,
       process: false,
-      tty: require.resolve('./tty-polyfill.js'),
+      tty: false,
       querystring: require.resolve('querystring-es3'),
     }
 
@@ -56,27 +45,6 @@ module.exports = {
         process: require.resolve('process/browser'),
       }),
     )
-
-    // Add global define for tty module
-    const webpack = require('webpack')
-    config.plugins.push(
-      new webpack.DefinePlugin({
-        'global.tty': JSON.stringify({ isatty: () => false }),
-        'window.tty': JSON.stringify({ isatty: () => false }),
-      }),
-    )
-
-    config.resolve.conditionNames = ['require', 'default']
-
-    // Filter out existing TypeScript/JavaScript rules and replace with our own
-    config.module.rules = config.module.rules.filter(rule => {
-      if (rule.test) {
-        const testStr = rule.test.toString()
-        return !testStr.includes('tsx?') && !testStr.includes('jsx?') && !testStr.includes('ts|tsx')
-          && !testStr.includes('js|jsx')
-      }
-      return true
-    })
 
     // Add our comprehensive TypeScript and JavaScript handling
     config.module.rules.unshift(
@@ -127,12 +95,6 @@ module.exports = {
         test: /\.ya?ml$/,
         type: 'asset/source',
       },
-    )
-
-    config.plugins.push(
-      new ProvidePlugin({
-        process: require.resolve('process/browser'),
-      }),
     )
 
     return config
