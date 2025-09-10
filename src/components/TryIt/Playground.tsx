@@ -6,6 +6,8 @@ import { FC, useEffect, useState } from 'react'
 import { useEvent } from 'react-use'
 
 import { HttpMethodColors } from '../../constants'
+import { useCombinedServers, useProcessedCustomServers, useProcessedSpecServers } from '../../hooks/useServerProcessing'
+import { useServerSelection } from '../../hooks/useServerSelection'
 import { useTextRequestResponseBodyState } from '../../hooks/useTextRequestBodyState'
 import { useTransformDocumentToNode } from '../../hooks/useTransformDocumentToNode'
 import { theme } from '../../themes/theme'
@@ -32,8 +34,6 @@ import {
   TryItResponse,
 } from './Response/Response'
 import { ServersDropdown } from './ServersDropdown'
-import { useCombinedServers, useProcessedCustomServers, useProcessedSpecServers } from '../../hooks/useServerProcessing'
-import { useServerSelection } from '../../hooks/useServerSelection'
 
 export interface PlaygroundProps {
   document: string
@@ -131,9 +131,7 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: IHttpOperation }>
   const { chosenServer, selectServer } = useServerSelection(servers)
   const isMockingEnabled = mockUrl && chosenServer?.url === mockUrl
 
-  // Handle selectCustomServer event from UI
   useEvent(SELECT_CREATED_CUSTOM_SERVER, (event: CustomEvent<{ url: string }>) => {
-    console.log('SelectServerEvent received in Playground:', event.detail.url)
     selectServer(event.detail.url)
   })
 
@@ -353,6 +351,7 @@ const PlaygroundContent: FC<PlaygroundProps & { httpOperation: IHttpOperation }>
               minWidth: '50px',
               width: '100%',
             }}
+            data-testid="SendButton"
           />
         </Box>
         {/*300px - height above content in portal, fix after migration to monaco*/}

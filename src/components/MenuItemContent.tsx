@@ -41,3 +41,5 @@ export const MenuItemContent: FC<MenuItemContentProps> = memo<MenuItemContentPro
     </Box>
   )
 })
+
+MenuItemContent.displayName = 'MenuItemContent'

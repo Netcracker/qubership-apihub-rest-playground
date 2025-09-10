@@ -15,3 +15,5 @@ export const OverflowTooltip: FC<TooltipProps> = memo<TooltipProps>(({ children,
     </Tooltip>
   )
 })
+
+OverflowTooltip.displayName = 'OverflowTooltip'

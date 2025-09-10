@@ -80,3 +80,5 @@ export const ButtonWithHint: FC<ButtonWithHintProps> = memo<ButtonWithHintProps>
     </Tooltip>
   )
 })
+
+ButtonWithHint.displayName = 'ButtonWithHint'
