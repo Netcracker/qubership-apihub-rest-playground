@@ -1,11 +1,10 @@
 {
   "extends": "./tsconfig.json",
   "include": [
-    "src/utils-export/index.ts",
+    "src/hooks/export-hooks.ts",
     "src/hooks/useServerProcessing.ts",
     "src/hooks/usePerformanceLogger.ts",
-    "src/utils/http-spec/IServer.ts",
-    "src/utils/string.ts"
+    "src/utils/http-spec/IServer.ts"
   ],
   "compilerOptions": {
     "outDir": "./dist",

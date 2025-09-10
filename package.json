@@ -4,7 +4,7 @@
   "description": "Web Component for Try It",
   "sideEffects": [
     "./dist/index.js",
-    "./dist/utils.js"
+    "./dist/hooks.js"
   ],
   "license": "Apache-2.0",
   "main": "./dist/index.js",
@@ -12,15 +12,15 @@
   "exports": {
     "./index.css": "./dist/styles.min.css",
     ".": "./dist/index.js",
-    "./utils": {
-      "types": "./dist/src/utils-export/index.d.ts",
-      "default": "./dist/utils.js"
+    "./hooks": {
+      "types": "./dist/src/hooks/export-hooks.d.ts",
+      "default": "./dist/hooks.js"
     }
   },
   "typesVersions": {
     ">=4.7": {
-      "utils": [
-        "./dist/src/utils-export/index.d.ts"
+      "hooks": [
+        "./dist/src/hooks/export-hooks.d.ts"
       ]
     }
   },
@@ -28,9 +28,9 @@
     "node": ">=14.13"
   },
   "scripts": {
-    "build": "npm run build.webcomponents && npm run build.utils && npm run build.styles",
+    "build": "npm run build.webcomponents && npm run build.hooks && npm run build.styles",
     "build.webcomponents": "webpack -c webpack.web-components.config.js",
-    "build.utils": "webpack -c ./webpack.utils.config.js",
+    "build.hooks": "webpack -c ./webpack.hooks.config.js",
     "build.styles": "postcss src/styles.css -o dist/styles.min.css",
     "build:showcase": "storybook build -o ./dist-showcase",
     "test": "jest -c .jest/unit-tests/unit-test.jest.config.js",

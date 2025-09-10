@@ -4,7 +4,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 module.exports = {
   mode: 'production',
-  entry: './src/utils-export/index.ts',
+  entry: './src/hooks/export-hooks.ts',
   experiments: {
     outputModule: true,
   },
@@ -23,7 +23,7 @@ module.exports = {
     maxAssetSize: 500000,
   },
   output: {
-    filename: 'utils.js',
+    filename: 'hooks.js',
     path: path.resolve(__dirname, 'dist'),
     publicPath: 'auto',
     library: {
