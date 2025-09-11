@@ -28,9 +28,7 @@ export function hashCode(str: string) {
  * @returns String with placeholders replaced by values
  */
 export const replacePlaceholders = (template: string, values: Record<string, string>): string => {
-  let result = template
-  for (const [key, value] of Object.entries(values)) {
-    result = result.replace(new RegExp(`\\{${key}\\}`, 'g'), value)
-  }
-  return result
+  return template.replace(/\{([^}]+)}/g, (match, key) => {
+    return values[key] !== undefined ? values[key] : match
+  })
 }

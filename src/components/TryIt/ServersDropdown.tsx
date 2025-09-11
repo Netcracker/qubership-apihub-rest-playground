@@ -85,10 +85,10 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         onOpen={handleOpen}
         onChange={handleServerChange}
         value={chosenServer?.url ?? ''}
-        renderValue={(p) => (
-          <OverflowTooltip title={p + operationPath}>
+        renderValue={(url) => (
+          <OverflowTooltip title={url + operationPath}>
             <Box sx={STYLE_SELECT_VALUE}>
-              {p}
+              {url}
               <Box component="span" sx={{ color: COLOR_TEXT_SECONDARY }}>
                 {operationPath}
               </Box>

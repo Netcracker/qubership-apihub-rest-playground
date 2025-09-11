@@ -1,8 +1,8 @@
-import { Box, Typography } from '@mui/material'
-import { FC, memo } from 'react'
+import { Box } from '@mui/material'
+import { type FC, memo } from 'react'
 
 import { COLOR_TEXT_SECONDARY } from '../themes/colors'
-import { OverflowTooltip } from './OverflowTooltip'
+import { TextWithOverflowTooltip } from './TextWithOverflowTooltip'
 
 export type MenuItemContentProps = Partial<{
   maxWidth: string | number
@@ -14,29 +14,25 @@ export const MenuItemContent: FC<MenuItemContentProps> = memo<MenuItemContentPro
   return (
     <Box width="100%" maxWidth={maxWidth}>
       {title && (
-        <OverflowTooltip placement="right" title={title}>
-          <Typography
-            variant="body2"
-            noWrap
-            fontSize="13px"
-            data-testid="MenuItemTitle"
-          >
-            {title}
-          </Typography>
-        </OverflowTooltip>
+        <TextWithOverflowTooltip
+          tooltipPlacement="right"
+          tooltipText={title}
+          fontSize="13px"
+          data-testid="MenuItemTitle"
+        >
+          {title}
+        </TextWithOverflowTooltip>
       )}
       {subtitle && (
-        <OverflowTooltip placement="right" title={subtitle}>
-          <Typography
-            variant="body2"
-            noWrap
-            color={COLOR_TEXT_SECONDARY}
-            fontSize="12px"
-            data-testid="MenuItemSubtitle"
-          >
-            {subtitle}
-          </Typography>
-        </OverflowTooltip>
+        <TextWithOverflowTooltip
+          tooltipPlacement="right"
+          tooltipText={subtitle}
+          color={COLOR_TEXT_SECONDARY}
+          fontSize="12px"
+          data-testid="MenuItemSubtitle"
+        >
+          {subtitle}
+        </TextWithOverflowTooltip>
       )}
     </Box>
   )

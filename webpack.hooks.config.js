@@ -4,7 +4,7 @@ const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 module.exports = {
   mode: 'production',
-  entry: './src/hooks/export-hooks.ts',
+  entry: './src/hooks/index.ts',
   experiments: {
     outputModule: true,
   },

@@ -51,18 +51,16 @@ export const useCombinedServers = (
   return useMemo(() => {
     const combinedServers = processedCustomServers.length > 0
       ? [...processedSpecServers, ...processedCustomServers]
-      : processedSpecServers
-
-    const finalServers = [...combinedServers]
+      : [...processedSpecServers]
 
     if (mockUrl) {
-      finalServers.push({
+      combinedServers.push({
         description: 'Mock Server',
         url: mockUrl,
       })
     }
 
-    return finalServers
+    return combinedServers
   }, [processedSpecServers, processedCustomServers, mockUrl])
 }
 
@@ -78,7 +76,7 @@ function processServers(servers: IServer[], isCustom = false): IServer[] {
       url: isCustom ? server.url : getServerUrlWithDefaultValues(server),
       description: server.description || '-',
       custom: isCustom,
-      shouldUseProxyEndpoint: isCustom ? server.shouldUseProxyEndpoint : true,
+      shouldUseProxyEndpoint: !isCustom || server.shouldUseProxyEndpoint,
     }
   })
 }

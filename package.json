@@ -13,14 +13,14 @@
     "./index.css": "./dist/styles.min.css",
     ".": "./dist/index.js",
     "./hooks": {
-      "types": "./dist/src/hooks/export-hooks.d.ts",
+      "types": "./dist/src/hooks/index.d.ts",
       "default": "./dist/hooks.js"
     }
   },
   "typesVersions": {
     ">=4.7": {
       "hooks": [
-        "./dist/src/hooks/export-hooks.d.ts"
+        "./dist/src/hooks/index.d.ts"
       ]
     }
   },
