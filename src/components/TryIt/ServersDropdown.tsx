@@ -85,16 +85,19 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         onOpen={handleOpen}
         onChange={handleServerChange}
         value={chosenServer?.url ?? ''}
-        renderValue={(url) => (
-          <OverflowTooltip title={url + operationPath}>
-            <Box sx={STYLE_SELECT_VALUE}>
-              {url}
-              <Box component="span" sx={{ color: COLOR_TEXT_SECONDARY }}>
-                {operationPath}
+        renderValue={(url) => {
+          const cleanUrl = url.replace(/\/$/, '')
+          return (
+            <OverflowTooltip title={cleanUrl + operationPath}>
+              <Box sx={STYLE_SELECT_VALUE}>
+                {cleanUrl}
+                <Box component="span" sx={{ color: COLOR_TEXT_SECONDARY }}>
+                  {operationPath}
+                </Box>
               </Box>
-            </Box>
-          </OverflowTooltip>
-        )}
+            </OverflowTooltip>
+          )
+        }}
         inputProps={selectInputProps}
         aria-label="Server"
         data-testid="ServerSelect"

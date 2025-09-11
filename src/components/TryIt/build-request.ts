@@ -117,7 +117,7 @@ export async function buildFetchRequest({
   const shouldUseProxyEndpoint = chosenServer?.shouldUseProxyEndpoint;
 
   // urlObject is concatenated this way to avoid /user and /user/ endpoint edge cases
-  const urlObject = new URL(serverUrl + expandedPath);
+  const urlObject = new URL(expandedPath, serverUrl);
   urlObject.search = new URLSearchParams(
     queryParamsWithAuth.map(nameAndValueObjectToPair)
   ).toString();
@@ -254,7 +254,7 @@ export async function buildHarRequest({
   const [queryParamsWithAuth, headerParamsWithAuth] =
     runAuthRequestEnhancements(auth, queryParams, headerParams);
   const expandedPath = uriExpand(httpOperation.path, parameterValues);
-  const urlObject = new URL(serverUrl + expandedPath);
+  const urlObject = new URL(expandedPath, serverUrl);
 
   let postData: HarRequest["postData"] = undefined;
   if (shouldIncludeBody && typeof bodyInput === "string") {
