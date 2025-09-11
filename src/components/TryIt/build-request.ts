@@ -116,8 +116,7 @@ export async function buildFetchRequest({
 
   const shouldUseProxyEndpoint = chosenServer?.shouldUseProxyEndpoint;
 
-  // urlObject is concatenated this way to avoid /user and /user/ endpoint edge cases
-  const urlObject = new URL(expandedPath, serverUrl);
+  const urlObject = joinUrl(serverUrl!, expandedPath)
   urlObject.search = new URLSearchParams(
     queryParamsWithAuth.map(nameAndValueObjectToPair)
   ).toString();
@@ -254,7 +253,7 @@ export async function buildHarRequest({
   const [queryParamsWithAuth, headerParamsWithAuth] =
     runAuthRequestEnhancements(auth, queryParams, headerParams);
   const expandedPath = uriExpand(httpOperation.path, parameterValues);
-  const urlObject = new URL(expandedPath, serverUrl);
+  const urlObject = joinUrl(serverUrl!, expandedPath)
 
   let postData: HarRequest["postData"] = undefined;
   if (shouldIncludeBody && typeof bodyInput === "string") {
@@ -302,4 +301,13 @@ function uriExpand(uri: string, data: Dictionary<string, string>) {
   return uri.replace(/{([^#?]+?)}/g, (match, value) => {
     return data[value] || value;
   });
+}
+
+/**
+ * Joins a base URL and a slash-prefixed path. Handles cases where the base URL may or may not end with a slash.
+ */
+function joinUrl(baseUrl: string, path: string) {
+  const baseUrlObj = new URL(baseUrl)
+  baseUrlObj.pathname = baseUrlObj.pathname.replace(/\/+$/, '') + path
+  return baseUrlObj
 }
