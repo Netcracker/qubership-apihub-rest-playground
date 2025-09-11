@@ -304,7 +304,9 @@ function uriExpand(uri: string, data: Dictionary<string, string>) {
 }
 
 /**
- * Joins a base URL and a slash-prefixed path. Handles cases where the base URL may or may not end with a slash.
+ * Joins a base URL and a slash-prefixed path. This function prevents the standard URL constructor's behavior
+ * of overwriting the entire base URL's path when concatenating with a path that starts with a slash.
+ * Handles cases where the base URL may or may not end with a slash.
  */
 function joinUrl(baseUrl: string, path: string) {
   const baseUrlObj = new URL(baseUrl)
