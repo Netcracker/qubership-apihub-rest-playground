@@ -15,6 +15,8 @@ module.exports = {
       stream: false,
       process: require.resolve('process/browser'),
       querystring: require.resolve('querystring-es3'),
+      path: require.resolve('path-browserify'),
+      fs: false,
     },
   },
   devtool: 'source-map',

@@ -46,6 +46,7 @@
     ]
   },
   "dependencies": {
+    "@apidevtools/json-schema-ref-parser": "^15.0.0",
     "@monaco-editor/react": "4.7.0",
     "monaco-editor": "0.52.2"
   },
@@ -65,7 +66,6 @@
     "@netcracker/qubership-apihub-npm-gitflow": "3.1.0",
     "@stoplight/eslint-config": "3.0.0",
     "@stoplight/json": "^3.18.1",
-    "@stoplight/json-schema-ref-parser": "^9.0.5",
     "@stoplight/json-schema-sampler": "0.2.2",
     "@stoplight/markdown-viewer": "^5.5.0",
     "@stoplight/mosaic": "^1.40.0",
@@ -122,6 +122,7 @@
     "lodash": "^4.17.19",
     "mark.js": "^8.11.1",
     "nanoid": "5.1.5",
+    "path-browserify": "^1.0.1",
     "postcss": "8.5.6",
     "postcss-cli": "11.0.1",
     "postcss-import": "16.1.1",
