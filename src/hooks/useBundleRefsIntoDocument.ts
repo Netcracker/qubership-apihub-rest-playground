@@ -55,8 +55,10 @@ const commonBundleOptions = { continueOnError: true }
 const doBundle = (data: object, baseUrl?: string) => {
   console.log('work---------->', data)
   if (!baseUrl) {
+    console.log('work---------->1', $RefParser.bundle(data, commonBundleOptions))
     return $RefParser.bundle(data, commonBundleOptions)
   } else {
+    console.log('work---------->2', $RefParser.bundle(baseUrl, data, commonBundleOptions))
     return $RefParser.bundle(baseUrl, data, commonBundleOptions)
   }
 }
