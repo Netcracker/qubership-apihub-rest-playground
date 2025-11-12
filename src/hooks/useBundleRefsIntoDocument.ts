@@ -2,6 +2,7 @@
 import $RefParser from '@apidevtools/json-schema-ref-parser'
 import { isObject } from 'lodash'
 import * as React from 'react'
+import * as console from "node:console";
 
 /**
  * @param type branch node snapshot type
@@ -55,10 +56,10 @@ const commonBundleOptions = { continueOnError: true }
 const doBundle = (data: object, baseUrl?: string) => {
   console.log('work---------->', data)
   if (!baseUrl) {
-    console.log('work---------->1', $RefParser.bundle(data, commonBundleOptions))
+    $RefParser.bundle(data, commonBundleOptions).then((aaa)=> console.log('work---------->1', aaa))
     return $RefParser.bundle(data, commonBundleOptions)
   } else {
-    console.log('work---------->2', $RefParser.bundle(baseUrl, data, commonBundleOptions))
+    console.log('work---------->2', $RefParser.bundle(baseUrl, data, commonBundleOptions).then())
     return $RefParser.bundle(baseUrl, data, commonBundleOptions)
   }
 }
