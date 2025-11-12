@@ -2,7 +2,6 @@
 import $RefParser from '@apidevtools/json-schema-ref-parser'
 import { isObject } from 'lodash'
 import * as React from 'react'
-import * as console from "node:console";
 
 /**
  * @param type branch node snapshot type
