@@ -1,4 +1,3 @@
-// import $RefParser from '@stoplight/json-schema-ref-parser'
 import $RefParser from '@apidevtools/json-schema-ref-parser'
 import { isObject } from 'lodash'
 import * as React from 'react'
@@ -55,10 +54,9 @@ const commonBundleOptions = { continueOnError: true }
 const doBundle = (data: object, baseUrl?: string) => {
   console.log('work---------->', data)
   if (!baseUrl) {
-    $RefParser.bundle(data, commonBundleOptions).then((aaa)=> console.log('work---------->1', aaa))
-    return $RefParser.bundle(data, commonBundleOptions)
+    $RefParser.dereference(data, commonBundleOptions).then((aaa)=> console.log('work---------->1', aaa))
+    return $RefParser.dereference(data, commonBundleOptions)
   } else {
-    console.log('work---------->2', $RefParser.bundle(baseUrl, data, commonBundleOptions).then())
-    return $RefParser.bundle(baseUrl, data, commonBundleOptions)
+    return $RefParser.dereference(baseUrl, data, commonBundleOptions)
   }
 }
