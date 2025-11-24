@@ -52,9 +52,7 @@ export function useBundleRefsIntoDocument(document: unknown, options?: Options) 
 
 const commonBundleOptions = { continueOnError: true }
 const doBundle = (data: object, baseUrl?: string) => {
-  console.log('work---------->', data)
   if (!baseUrl) {
-    $RefParser.dereference(data, commonBundleOptions).then((aaa)=> console.log('work---------->1', aaa))
     return $RefParser.dereference(data, commonBundleOptions)
   } else {
     return $RefParser.dereference(baseUrl, data, commonBundleOptions)
