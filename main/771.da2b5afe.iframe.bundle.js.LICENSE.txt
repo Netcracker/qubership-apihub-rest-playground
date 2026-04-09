@@ -1,3 +1,5 @@
+/*! https://mths.be/punycode v1.4.1 by @mathias */
+
 /**
  * @license https://raw.githubusercontent.com/node-fetch/node-fetch/master/LICENSE.md
  *
