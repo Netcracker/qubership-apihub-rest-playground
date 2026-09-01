@@ -99,7 +99,7 @@
     "@types/har-format": "^1.2.5",
     "@types/httpsnippet": "^1.23.0",
     "@types/jest": "30.0.0",
-    "@types/json-schema": "7.0.15",
+    "@types/json-schema": "^7.0.15",
     "@types/lodash": "^4.14.181",
     "@types/node": "^22.18.0",
     "@types/prop-types": "^15.7.5",
