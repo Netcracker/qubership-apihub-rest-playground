@@ -2,7 +2,7 @@ import * as React from 'react'
 import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react'
 import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
-import { MenuItem } from '@mui/material'
+import { MenuItem, SelectChangeEvent } from '@mui/material'
 import { INodeExample, INodeExternalExample } from '@stoplight/types'
 import { safeStringify } from '@stoplight/json'
 import { MenuItemContent } from '../MenuItemContent'
@@ -29,7 +29,7 @@ export const ExamplesDropdown: FC<ExamplesDropdownProps> = memo<ExamplesDropdown
     }
 
     const handleClick = useCallback(
-      event => {
+      (event: SelectChangeEvent) => {
         const targetExampleKey = event.target.value
         const example = examples.find(({ key }) => key === targetExampleKey)
 

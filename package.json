@@ -102,8 +102,8 @@
     "@types/lodash": "^4.14.181",
     "@types/node": "^24.0.0",
     "@types/prop-types": "^15.7.5",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
     "@types/react-router-dom": "^5.2.0",
     "@types/react-router-hash-link": "^2.1.0",
     "@types/swagger-schema-official": "~2.0.22",
@@ -142,8 +142,8 @@
     "process": "^0.11.10",
     "prop-types": "^15.7.2",
     "querystring-es3": "^0.2.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "react-mark.js": "9.0.7",
     "react-query": "^3.34.19",
     "react-router-dom": "^5.2.0",
@@ -162,5 +162,22 @@
     "webpack-cli": "6.0.1",
     "webpack-dev-server": "5.2.2",
     "xml-formatter": "^2.6.1"
+  },
+  "//overrides": [
+    "@stoplight/mosaic declares \"@types/react\": \"^17.0.3\" as a hard dependency - still true",
+    "at 1.53.5, the latest - so once this package is on React 18 npm nests React 17 types",
+    "under it and the program holds two React identities. That produced 22 TS2786",
+    "\"X cannot be used as a JSX component\" on mosaic's own components. Measured: removing",
+    "the nested copy takes tsc from 88 errors to 76 and TS2786 from 22 to 0.",
+    "$@types/react resolves to whatever this manifest declares, so the two cannot drift.",
+    "Remove when mosaic stops pinning React 17 types. Recorded in the overrides inventory",
+    "in NEXT-PHASE-SCOPE.md 1.19 - npm applies overrides from the install root, so the",
+    "monorepo must reproduce this one."
+  ],
+  "overrides": {
+    "@stoplight/mosaic": {
+      "@types/react": "$@types/react",
+      "@types/react-dom": "$@types/react-dom"
+    }
   }
 }

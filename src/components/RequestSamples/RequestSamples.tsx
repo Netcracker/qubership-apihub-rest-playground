@@ -72,7 +72,7 @@ export const RequestSamples = React.memo<RequestSamplesProps>(({ request, embedd
   }, [selectedLanguage, selectedLibrary, setSelectedLanguage, setSelectedLibrary])
 
   const onChange = useCallback(
-    event => {
+    (event: React.ChangeEvent<HTMLSelectElement>) => {
       setSelectedLanguage(event.target.value)
       event.target.value = 'default'
     },

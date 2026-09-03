@@ -26,7 +26,7 @@ export const NativeMenu: React.FC<MenuProps> = React.memo(props => {
       {menuItems.map(item => {
         const { id, title } = item as MenuActionItem
         return (
-          <option key={nanoid(8)} value={id}>
+          <option key={nanoid(8)} value={String(id)}>
             {title}
           </option>
         )

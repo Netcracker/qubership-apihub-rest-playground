@@ -30,7 +30,7 @@ export const NativeMenuAdapter: React.FC<NativeMenuAdapterProps> = ({
           const { id, title } = item as MenuActionItem
           return (
             item && (
-              <option key={nanoid(8)} value={id}>
+              <option key={nanoid(8)} value={String(id)}>
                 {title}
               </option>
             )
