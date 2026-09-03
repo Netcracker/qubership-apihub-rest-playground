@@ -5,7 +5,7 @@ import { INodeExample, INodeExternalExample } from '@stoplight/types'
 import * as React from 'react'
 import { useState } from 'react'
 import Select from '@mui/material/Select'
-import { MenuItem } from '@mui/material'
+import { MenuItem, SelectChangeEvent } from '@mui/material'
 import { MenuItemContent } from '../../MenuItemContent'
 import { nanoid } from 'nanoid'
 
@@ -49,7 +49,7 @@ function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
   const [selectedExample, setSelectedExample] = useState<INodeExample | INodeExternalExample | undefined>()
 
   const handleClick = React.useCallback(
-    event => {
+    (event: SelectChangeEvent) => {
       const targetExampleKey = event.target.value
       const example = examples.find(({ key }) => key === targetExampleKey)
 
