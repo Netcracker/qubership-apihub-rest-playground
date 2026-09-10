@@ -1,5 +1,4 @@
 import { MenuActionItem, MenuItems } from '@stoplight/mosaic'
-import { nanoid } from 'nanoid'
 import * as React from 'react'
 
 export type MenuProps = {
@@ -26,7 +25,7 @@ export const NativeMenu: React.FC<MenuProps> = React.memo(props => {
       {menuItems.map(item => {
         const { id, title } = item as MenuActionItem
         return (
-          <option key={nanoid(8)} value={id}>
+          <option key={id} value={id}>
             {title}
           </option>
         )

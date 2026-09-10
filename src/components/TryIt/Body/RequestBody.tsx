@@ -7,7 +7,6 @@ import { useState } from 'react'
 import Select from '@mui/material/Select'
 import { MenuItem } from '@mui/material'
 import { MenuItemContent } from '../../MenuItemContent'
-import { nanoid } from 'nanoid'
 
 interface RequestBodyProps {
   examples: ReadonlyArray<INodeExample | INodeExternalExample>;
@@ -83,11 +82,11 @@ function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
       renderValue={p => p}
       className="MuiInputBase-root examples MuiList-root custom"
     >
-      {menuItems.map((menuItem, index) => {
-        const { title, description } = menuItem
+      {menuItems.map(menuItem => {
+        const { id, title, description } = menuItem
         return (
           <MenuItem
-            key={nanoid(8)}
+            key={id}
             style={{ width: '100%', display: 'flex', alignItems: 'center' }}
             value={title}
             disableRipple
