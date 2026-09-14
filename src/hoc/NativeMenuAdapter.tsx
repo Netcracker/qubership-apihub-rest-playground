@@ -25,11 +25,11 @@ export const NativeMenuAdapter: React.FC<NativeMenuAdapterProps> = ({
         <option disabled value="default">
           {title}
         </option>
-        {menuItems.map(item => {
+        {menuItems.map((item, index) => {
           const { id, title } = item as MenuActionItem
           return (
             item && (
-              <option key={id} value={id}>
+              <option key={`${id}-${index}`} value={id}>
                 {title}
               </option>
             )

@@ -22,10 +22,10 @@ export const NativeMenu: React.FC<MenuProps> = React.memo(props => {
       <option disabled value="default" style={{ display: 'none' }}>
         {title}
       </option>
-      {menuItems.map(item => {
+      {menuItems.map((item, index) => {
         const { id, title } = item as MenuActionItem
         return (
-          <option key={id} value={id}>
+          <option key={`${id}-${index}`} value={id}>
             {title}
           </option>
         )

@@ -64,8 +64,11 @@ function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
 
   const menuItems = React.useMemo(
     () =>
-      examples.map(example => ({
-        id: `request-example-${example.key}`,
+      examples.map((example, index) => ({
+        // Example keys are not guaranteed to be unique: http-spec assigns the key
+        // 'default' to the example taken from `example`, which can collide with a
+        // key coming from `examples`.
+        id: `request-example-${index}-${example.key}`,
         title: example.key,
         description: example.summary,
       })),
