@@ -1,5 +1,4 @@
 import { Box, MenuActionItem, MenuItems } from '@stoplight/mosaic'
-import { nanoid } from 'nanoid'
 import * as React from 'react'
 
 export interface NativeMenuAdapterProps {
@@ -26,11 +25,11 @@ export const NativeMenuAdapter: React.FC<NativeMenuAdapterProps> = ({
         <option disabled value="default">
           {title}
         </option>
-        {menuItems.map(item => {
+        {menuItems.map((item, index) => {
           const { id, title } = item as MenuActionItem
           return (
             item && (
-              <option key={nanoid(8)} value={id}>
+              <option key={`${id}-${index}`} value={id}>
                 {title}
               </option>
             )
