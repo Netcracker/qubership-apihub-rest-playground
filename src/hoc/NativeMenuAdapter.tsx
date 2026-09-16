@@ -1,6 +1,9 @@
 import { Box, MenuActionItem, MenuItems } from '@stoplight/mosaic'
 import * as React from 'react'
 
+const isSelectableMenuItem = (item: MenuItems[number]): item is MenuActionItem =>
+  !!item && typeof item === 'object' && 'id' in item
+
 export interface NativeMenuAdapterProps {
   title: string;
   menuItems: MenuItems;
@@ -26,13 +29,14 @@ export const NativeMenuAdapter: React.FC<NativeMenuAdapterProps> = ({
           {title}
         </option>
         {menuItems.map((item, index) => {
-          const { id, title } = item as MenuActionItem
+          if (!isSelectableMenuItem(item)) {
+            return null
+          }
+          const { id, title } = item
           return (
-            item && (
-              <option key={`${id}-${index}`} value={id}>
-                {title}
-              </option>
-            )
+            <option key={`${id}-${index}`} value={id}>
+              {title}
+            </option>
           )
         })}
       </select>
