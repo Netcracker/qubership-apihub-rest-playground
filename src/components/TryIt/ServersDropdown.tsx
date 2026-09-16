@@ -102,11 +102,11 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         aria-label="Server"
         data-testid="ServerSelect"
       >
-        {servers.map((server) => {
+        {servers.map((server, index) => {
           const { url, description, custom } = server
           return (
             <MenuItem
-              key={server.url}
+              key={`${server.url}-${index}`}
               value={server.url}
               selected={server.url === chosenServer?.url}
               sx={STYLE_MENU_ITEM}
