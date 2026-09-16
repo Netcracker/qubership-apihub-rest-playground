@@ -1,11 +1,12 @@
+import { MenuItem } from '@mui/material'
+import Select from '@mui/material/Select'
 import { safeStringify } from '@stoplight/json'
 import { Panel } from '@stoplight/mosaic'
 import { CodeEditor } from '@stoplight/mosaic-code-editor'
 import { INodeExample, INodeExternalExample } from '@stoplight/types'
 import * as React from 'react'
 import { useState } from 'react'
-import Select from '@mui/material/Select'
-import { MenuItem } from '@mui/material'
+
 import { MenuItemContent } from '../../MenuItemContent'
 
 interface RequestBodyProps {
@@ -44,35 +45,40 @@ export const RequestBody: React.FC<RequestBodyProps> = ({ examples, requestBody,
 }
 
 function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
-  const firstExampleKey = examples.length ? examples[0].key : ''
-  const [selectedExample, setSelectedExample] = useState<INodeExample | INodeExternalExample | undefined>()
-
-  const handleClick = React.useCallback(
-    event => {
-      const targetExampleKey = event.target.value
-      const example = examples.find(({ key }) => key === targetExampleKey)
-
-      onChange(
-        example
-          ? safeStringify('value' in example ? example?.value : example?.externalValue, undefined, 2) ?? ''
-          : requestBody,
-      )
-      setSelectedExample(example)
-    },
-    [onChange, requestBody],
-  )
-
   const menuItems = React.useMemo(
     () =>
       examples.map((example, index) => ({
-        // Example keys are not guaranteed to be unique: http-spec assigns the key
-        // 'default' to the example taken from `example`, which can collide with a
-        // key coming from `examples`.
+        // Example keys are not guaranteed to be unique: http-spec assigns the key 'default'
+        // to the example taken from `example`, which can collide with a key coming from `examples`.
+        // The index is what makes the id unique; the key is kept for readability.
         id: `request-example-${index}-${example.key}`,
         title: example.key,
         description: example.summary,
+        example,
       })),
     [examples],
+  )
+
+  const [selectedId, setSelectedId] = useState<string | undefined>()
+  const selectedItem = menuItems.find(({ id }) => id === selectedId) ?? menuItems[0]
+
+  const handleClick = React.useCallback(
+    event => {
+      const item = menuItems.find(({ id }) => id === event.target.value)
+
+      onChange(
+        item
+          ? safeStringify('value' in item.example ? item.example.value : item.example.externalValue, undefined, 2) ?? ''
+          : requestBody,
+      )
+      setSelectedId(item?.id)
+    },
+    [menuItems, onChange, requestBody],
+  )
+
+  const renderValue = React.useCallback(
+    (id: string) => menuItems.find(item => item.id === id)?.title ?? '',
+    [menuItems],
   )
 
   return (
@@ -80,9 +86,8 @@ function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
       variant="standard"
       disableUnderline
       onChange={handleClick}
-      value={selectedExample?.key}
-      defaultValue={firstExampleKey}
-      renderValue={p => p}
+      value={selectedItem?.id ?? ''}
+      renderValue={renderValue}
       className="MuiInputBase-root examples MuiList-root custom"
     >
       {menuItems.map(menuItem => {
@@ -91,7 +96,7 @@ function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
           <MenuItem
             key={id}
             style={{ width: '100%', display: 'flex', alignItems: 'center' }}
-            value={title}
+            value={id}
             disableRipple
           >
             <MenuItemContent title={title} subtitle={description}/>
