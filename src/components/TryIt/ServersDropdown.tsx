@@ -50,11 +50,13 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
   const { chosenServer, selectServer } = useServerSelection(servers)
   const [open, setOpen] = useState(false)
 
+  const selectedIndex = servers.findIndex(server => server.url === chosenServer?.url)
+
   const handleServerChange = useCallback(
     (event) => {
-      selectServer(event.target.value || '')
+      selectServer(servers[Number(event.target.value)]?.url ?? '')
     },
-    [selectServer],
+    [servers, selectServer],
   )
 
   const handleServerAdd = useCallback(() => {
@@ -84,9 +86,9 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         onClose={handleClose}
         onOpen={handleOpen}
         onChange={handleServerChange}
-        value={chosenServer?.url ?? ''}
-        renderValue={(url) => {
-          const cleanUrl = url.replace(/\/$/, '')
+        value={selectedIndex >= 0 ? String(selectedIndex) : ''}
+        renderValue={(index) => {
+          const cleanUrl = (servers[Number(index)]?.url ?? '').replace(/\/$/, '')
           return (
             <OverflowTooltip title={cleanUrl + operationPath}>
               <Box sx={STYLE_SELECT_VALUE}>
@@ -107,8 +109,7 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
           return (
             <MenuItem
               key={`${server.url}-${index}`}
-              value={server.url}
-              selected={server.url === chosenServer?.url}
+              value={String(index)}
               sx={STYLE_MENU_ITEM}
             >
               <MenuItemContent title={url} subtitle={description} maxWidth={MENU_ITEM_MAX_WIDTH} />
