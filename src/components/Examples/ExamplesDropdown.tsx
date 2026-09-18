@@ -19,9 +19,6 @@ export const ExamplesDropdown: FC<ExamplesDropdownProps> = memo<ExamplesDropdown
     const menuItems = useMemo(
       () =>
         examples.map((example, index) => ({
-          // Example keys are not guaranteed to be unique: http-spec assigns the key 'default'
-          // to the example taken from `example`, which can collide with a key coming from `examples`.
-          // The index is what makes the id unique; the key is kept for readability.
           id: `request-example-${index}-${example.key}`,
           title: example.key,
           summary: example.summary,
