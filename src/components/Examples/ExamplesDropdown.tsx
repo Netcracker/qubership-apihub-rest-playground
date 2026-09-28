@@ -3,9 +3,12 @@ import FormControl from '@mui/material/FormControl'
 import Select from '@mui/material/Select'
 import { safeStringify } from '@stoplight/json'
 import { INodeExample, INodeExternalExample } from '@stoplight/types'
-import { FC, memo, useCallback, useEffect, useMemo, useState } from 'react'
+import { FC, memo, useCallback, useEffect, useState } from 'react'
 
+import { useExampleMenuItems } from '../../hooks/useExampleMenuItems'
 import { MenuItemContent } from '../MenuItemContent'
+
+const STYLE_MENU_ITEM = { width: '100%', display: 'flex', alignItems: 'center' }
 
 export type ExamplesDropdownProps = {
   examples: ReadonlyArray<INodeExample | INodeExternalExample>;
@@ -16,20 +19,10 @@ export type ExamplesDropdownProps = {
 
 export const ExamplesDropdown: FC<ExamplesDropdownProps> = memo<ExamplesDropdownProps>(
   ({ examples, requestResponseBody, onChange, onSelectExample }) => {
-    const menuItems = useMemo(
-      () =>
-        examples.map((example, index) => ({
-          id: `request-example-${index}-${example.key}`,
-          title: example.key,
-          summary: example.summary,
-          description: ((example as INodeExample)?.value as INodeExample)?.description ?? '',
-          example,
-        })),
-      [examples],
-    )
+    const { menuItems, findMenuItem, renderMenuItemTitle } = useExampleMenuItems(examples)
 
     const [selectedId, setSelectedId] = useState<string | undefined>()
-    const selectedItem = menuItems.find(({ id }) => id === selectedId) ?? menuItems[0]
+    const selectedItem = findMenuItem(selectedId) ?? menuItems[0]
 
     useEffect(() => setSelectedId(menuItems.length ? menuItems[0].id : undefined), [menuItems])
 
@@ -43,7 +36,7 @@ export const ExamplesDropdown: FC<ExamplesDropdownProps> = memo<ExamplesDropdown
 
     const handleClick = useCallback(
       event => {
-        const item = menuItems.find(({ id }) => id === event.target.value)
+        const item = findMenuItem(event.target.value)
 
         onChange(
           item
@@ -54,7 +47,7 @@ export const ExamplesDropdown: FC<ExamplesDropdownProps> = memo<ExamplesDropdown
         setSelectedId(item?.id)
         setOpen(false)
       },
-      [menuItems, onChange, requestResponseBody],
+      [findMenuItem, onChange, requestResponseBody],
     )
 
     useEffect(() => {
@@ -69,18 +62,13 @@ export const ExamplesDropdown: FC<ExamplesDropdownProps> = memo<ExamplesDropdown
           onOpen={handleOpen}
           onChange={handleClick}
           value={selectedItem?.id ?? ''}
-          renderValue={id => menuItems.find(item => item.id === id)?.title ?? ''}
+          renderValue={renderMenuItemTitle}
           className="MuiInputBase-root MuiSelect-select custom"
         >
-          {menuItems.map(({ id, title, summary }) => {
+          {menuItems.map(({ id, title, subtitle }) => {
             return (
-              <MenuItem
-                key={id}
-                style={{ width: '100%', display: 'flex', alignItems: 'center' }}
-                value={id}
-                disableRipple
-              >
-                <MenuItemContent title={title} subtitle={summary} maxWidth="400px"/>
+              <MenuItem key={id} style={STYLE_MENU_ITEM} value={id} disableRipple>
+                <MenuItemContent title={title} subtitle={subtitle} maxWidth="400px"/>
               </MenuItem>
             )
           })}

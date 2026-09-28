@@ -39,6 +39,8 @@ const STYLE_DELETE_BUTTON = {
   p: 0,
 }
 
+const STYLE_OPERATION_PATH = { color: COLOR_TEXT_SECONDARY }
+
 const selectInputProps = { sx: { py: '1px' } } // align input and button height
 
 export type ServersDropdownProps = {
@@ -52,11 +54,19 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
 
   const selectedIndex = servers.findIndex(server => server.url === chosenServer?.url)
 
+  const serverAt = useCallback(
+    (value: string) => {
+      const position = Number.parseInt(value, 10)
+      return Number.isInteger(position) ? servers[position] : undefined
+    },
+    [servers],
+  )
+
   const handleServerChange = useCallback(
     (event) => {
-      selectServer(servers[Number(event.target.value)]?.url ?? '')
+      selectServer(serverAt(event.target.value)?.url ?? '')
     },
-    [servers, selectServer],
+    [serverAt, selectServer],
   )
 
   const handleServerAdd = useCallback(() => {
@@ -79,6 +89,23 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
     setOpen(true)
   }
 
+  const renderServerValue = useCallback(
+    (index: string) => {
+      const cleanUrl = (serverAt(index)?.url ?? '').replace(/\/$/, '')
+      return (
+        <OverflowTooltip title={cleanUrl + operationPath}>
+          <Box sx={STYLE_SELECT_VALUE}>
+            {cleanUrl}
+            <Box component="span" sx={STYLE_OPERATION_PATH}>
+              {operationPath}
+            </Box>
+          </Box>
+        </OverflowTooltip>
+      )
+    },
+    [serverAt, operationPath],
+  )
+
   return (
     <FormControl size="small" fullWidth>
       <Select
@@ -87,19 +114,7 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         onOpen={handleOpen}
         onChange={handleServerChange}
         value={selectedIndex >= 0 ? String(selectedIndex) : ''}
-        renderValue={(index) => {
-          const cleanUrl = (servers[Number(index)]?.url ?? '').replace(/\/$/, '')
-          return (
-            <OverflowTooltip title={cleanUrl + operationPath}>
-              <Box sx={STYLE_SELECT_VALUE}>
-                {cleanUrl}
-                <Box component="span" sx={{ color: COLOR_TEXT_SECONDARY }}>
-                  {operationPath}
-                </Box>
-              </Box>
-            </OverflowTooltip>
-          )
-        }}
+        renderValue={renderServerValue}
         inputProps={selectInputProps}
         aria-label="Server"
         data-testid="ServerSelect"

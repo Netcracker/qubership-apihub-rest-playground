@@ -7,7 +7,10 @@ import { INodeExample, INodeExternalExample } from '@stoplight/types'
 import * as React from 'react'
 import { useState } from 'react'
 
+import { useExampleMenuItems } from '../../../hooks/useExampleMenuItems'
 import { MenuItemContent } from '../../MenuItemContent'
+
+const STYLE_MENU_ITEM = { width: '100%', display: 'flex', alignItems: 'center' }
 
 interface RequestBodyProps {
   examples: ReadonlyArray<INodeExample | INodeExternalExample>;
@@ -45,23 +48,14 @@ export const RequestBody: React.FC<RequestBodyProps> = ({ examples, requestBody,
 }
 
 function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
-  const menuItems = React.useMemo(
-    () =>
-      examples.map((example, index) => ({
-        id: `request-example-${index}-${example.key}`,
-        title: example.key,
-        description: example.summary,
-        example,
-      })),
-    [examples],
-  )
+  const { menuItems, findMenuItem, renderMenuItemTitle } = useExampleMenuItems(examples)
 
   const [selectedId, setSelectedId] = useState<string | undefined>()
-  const selectedItem = menuItems.find(({ id }) => id === selectedId) ?? menuItems[0]
+  const selectedItem = findMenuItem(selectedId) ?? menuItems[0]
 
   const handleClick = React.useCallback(
     event => {
-      const item = menuItems.find(({ id }) => id === event.target.value)
+      const item = findMenuItem(event.target.value)
 
       onChange(
         item
@@ -70,12 +64,7 @@ function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
       )
       setSelectedId(item?.id)
     },
-    [menuItems, onChange, requestBody],
-  )
-
-  const renderValue = React.useCallback(
-    (id: string) => menuItems.find(item => item.id === id)?.title ?? '',
-    [menuItems],
+    [findMenuItem, onChange, requestBody],
   )
 
   return (
@@ -84,19 +73,13 @@ function ExampleMenu({ examples, requestBody, onChange }: RequestBodyProps) {
       disableUnderline
       onChange={handleClick}
       value={selectedItem?.id ?? ''}
-      renderValue={renderValue}
+      renderValue={renderMenuItemTitle}
       className="MuiInputBase-root examples MuiList-root custom"
     >
-      {menuItems.map(menuItem => {
-        const { id, title, description } = menuItem
+      {menuItems.map(({ id, title, subtitle }) => {
         return (
-          <MenuItem
-            key={id}
-            style={{ width: '100%', display: 'flex', alignItems: 'center' }}
-            value={id}
-            disableRipple
-          >
-            <MenuItemContent title={title} subtitle={description}/>
+          <MenuItem key={id} style={STYLE_MENU_ITEM} value={id} disableRipple>
+            <MenuItemContent title={title} subtitle={subtitle}/>
           </MenuItem>
         )
       })}
