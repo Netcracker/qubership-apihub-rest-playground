@@ -52,21 +52,25 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
   const { chosenServer, selectServer } = useServerSelection(servers)
   const [open, setOpen] = useState(false)
 
-  const selectedIndex = servers.findIndex(server => server.url === chosenServer?.url)
+  const selectedIndex = chosenServer ? servers.indexOf(chosenServer) : -1
 
-  const serverAt = useCallback(
+  const positionAt = useCallback(
     (value: string) => {
       const position = Number.parseInt(value, 10)
-      return Number.isInteger(position) ? servers[position] : undefined
+      return Number.isInteger(position) && position >= 0 && position < servers.length ? position : -1
     },
     [servers],
   )
 
   const handleServerChange = useCallback(
     (event) => {
-      selectServer(serverAt(event.target.value)?.url ?? '')
+      const position = positionAt(event.target.value)
+      if (position < 0) {
+        return
+      }
+      selectServer(servers[position].url, position)
     },
-    [serverAt, selectServer],
+    [positionAt, servers, selectServer],
   )
 
   const handleServerAdd = useCallback(() => {
@@ -91,7 +95,8 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
 
   const renderServerValue = useCallback(
     (index: string) => {
-      const cleanUrl = (serverAt(index)?.url ?? '').replace(/\/$/, '')
+      const position = positionAt(index)
+      const cleanUrl = (position >= 0 ? servers[position].url : '').replace(/\/$/, '')
       return (
         <OverflowTooltip title={cleanUrl + operationPath}>
           <Box sx={STYLE_SELECT_VALUE}>
@@ -103,7 +108,7 @@ export const ServersDropdown = ({ servers, operationPath }: ServersDropdownProps
         </OverflowTooltip>
       )
     },
-    [serverAt, operationPath],
+    [positionAt, servers, operationPath],
   )
 
   return (
